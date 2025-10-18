@@ -255,6 +255,7 @@ export default function Home() {
   }, [currentIndex, loadedProducts]);
 
   return (
+    <div className="home"> 
     <div style={{
       position: 'relative',
       width: '100%',
@@ -384,6 +385,7 @@ export default function Home() {
           }
         `}
       </style>
+    </div>
     </div>
   );
 }
