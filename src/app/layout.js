@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Scroll.ai - Infinite Knowledge Generator',
+  title: 'StudyScroll - Infinite Knowledge Generator',
   description: 'Infinite Knowledge. One Scroll at a Time.',
 };
 
