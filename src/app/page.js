@@ -23,12 +23,8 @@ export default function HomePage() {
   ];
 
   const suggestedTopics = [
-    "Ancient Rome",
-    "Climate Change",
-    "Machine Learning",
-    "Black Holes",
-    "Renaissance Art",
-    "Blockchain Technology"
+    {title: "Python Basics", feed_id: "1fa3a63b-d95c-47c7-b707-2dda8fc8e0d7"},
+    {title: "Common Polyatomic-Ions", feed_id: "d5f81c45-cd0f-4bed-a14d-a1bcbe603bef"}
   ];
 
   const [currentTopicIndex, setCurrentTopicIndex] = useState(0);
@@ -38,6 +34,9 @@ export default function HomePage() {
   const [isHovering, setIsHovering] = useState(false);
   const [showHero, setShowHero] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [currentFeedId, setCurrentFeedId] = useState("")
+  const [isLoading, setLoading] = useState(false)
+  const [feedData, setFeedData] = useState(null)
   const lineRef = useRef(null);
   const buttonRef = useRef(null);
   const inputRef = useRef(null);
@@ -95,11 +94,38 @@ export default function HomePage() {
   }, [isHovering, showHero]);
 
   const handleSuggestedTopicClick = (topic) => {
-    setInputValue(topic);
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    loadPregenerated(topic.feed_id);
   };
+
+  const loadPregenerated = async (feed_id) => {
+    try {
+      setLoading(true);
+      setIsTransitioning(true);
+      setCurrentFeedId(feed_id);
+
+      const res = await fetch(`http://localhost:5000/studysets/get?username=eli&id=${encodeURIComponent(feed_id)}`, {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+      });
+
+      if (!res.ok) {
+        throw new Error(`Failed to load feed: ${res.status} ${res.statusText}`);
+      }
+
+      const data = await res.json();
+      setFeedData(data);
+
+      // After data is set, do the hero transition
+      setTimeout(() => {
+        setShowHero(true);
+      }, 300);
+    } catch (err) {
+      console.error('Error loading pre-generated feed', err);
+      setIsTransitioning(false);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -135,7 +161,7 @@ export default function HomePage() {
             }
           `}
         </style>
-        <Hero onBack={handleBackToHome} searchQuery={inputValue} />    
+        <Hero onBack={handleBackToHome} content={feedData} searchQuery={inputValue} />    
       </div>
     );
   }
@@ -315,7 +341,7 @@ export default function HomePage() {
                 <div className="flex flex-wrap justify-center gap-2">
                   {suggestedTopics.map((topic, index) => (
                     <button key={index} type="button" onClick={() => handleSuggestedTopicClick(topic)} className="topic-pill">
-                      {topic}
+                      {topic.title}
                     </button>
                   ))}
                 </div>

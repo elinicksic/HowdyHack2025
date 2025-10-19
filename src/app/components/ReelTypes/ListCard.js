@@ -21,7 +21,7 @@ export function ListCard({ content, onDoubleTap }) {
         {content.title}
       </h2>
       <div style={{ width: '100%', maxWidth: '350px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {content.items.map((item, index) => (
+        {content.slides.map((item, index) => (
           <div
             key={index}
             style={{
@@ -52,7 +52,7 @@ export function ListCard({ content, onDoubleTap }) {
             }}>
               {index + 1}
             </span>
-            <span>{item}</span>
+            <span>{item.content}</span>
           </div>
         ))}
       </div>

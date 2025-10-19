@@ -37,8 +37,8 @@ export function QuizCard({ content, isActive, onDoubleTap }) {
         {content.question}
       </h2>
       <div style={{ width: '100%', maxWidth: '280px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {content.options.map((option, index) => {
-          const isCorrect = index === content.correctAnswer;
+        {content.choices.map((option, index) => {
+          const isCorrect = index === content.correct_idx;
           const isSelected = index === selectedAnswer;
           let bgColor = 'rgba(255, 255, 255, 0.2)';
           
@@ -73,7 +73,7 @@ export function QuizCard({ content, isActive, onDoubleTap }) {
       </div>
       {showResult && (
         <p style={{ marginTop: '24px', fontSize: '18px', color: 'white', fontWeight: 'bold' }}>
-          {selectedAnswer === content.correctAnswer ? '✅ Correct!' : '❌ Try again!'}
+          {selectedAnswer === content.correct_idx ? '✅ Correct!' : '❌ Try again!'}
         </p>
       )}
     </div>

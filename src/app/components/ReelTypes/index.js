@@ -7,3 +7,4 @@ export { TextCard } from './TextCard';
 export { PollCard } from './PollCard';
 export { FlashCard } from './FlashCard';
 export { ListCard } from './ListCard';
+export { PostCard } from './PostCard'

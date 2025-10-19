@@ -10,7 +10,8 @@ import {
   TextCard, 
   PollCard, 
   FlashCard, 
-  ListCard 
+  ListCard,
+  PostCard
 } from './components/ReelTypes';
 
 
@@ -29,7 +30,7 @@ const generateComments = () => [
 
 // Comments Sheet Component
 const CommentsSheet = ({ isOpen, onClose, content }) => {
-  const [comments, setComments] = useState(generateComments());
+  const [comments, setComments] = useState(content.comments);
   const [newComment, setNewComment] = useState('');
   const [likedComments, setLikedComments] = useState(new Set());
 
@@ -148,14 +149,14 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '3px' }}>
                   <span style={{ color: 'white', fontWeight: 'bold', fontSize: '13px' }}>
-                    {comment.user}
+                    {comment.author}
                   </span>
                   <span style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '11px' }}>
                     {comment.time}
                   </span>
                 </div>
                 <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '13px', lineHeight: '1.4', marginBottom: '6px' }}>
-                  {comment.text}
+                  {comment.content}
                 </p>
                 <button
                   onClick={() => toggleLike(comment.id)}
@@ -253,14 +254,14 @@ const Reel = ({ content, isActive }) => {
   // Render different content types
   const renderContent = () => {
     switch (content.type) {
-      case 'quiz':
+      case 'question':
         return <QuizCard content={content} isActive={isActive} onDoubleTap={handleDoubleTap} />;
       case 'image':
         return <ImageCard content={content} onDoubleTap={handleDoubleTap} />;
       case 'video':
         return <VideoCard content={content} onDoubleTap={handleDoubleTap} />;
-      case 'text':
-        return <TextCard content={content} onDoubleTap={handleDoubleTap} />;
+      case 'post':
+        return <PostCard content={content} onDoubleTap={handleDoubleTap} />;
       case 'poll':
         return <PollCard content={content} onDoubleTap={handleDoubleTap} />;
       case 'flashcard':
@@ -386,7 +387,7 @@ const Reel = ({ content, isActive }) => {
             <MessageCircle size={24} color="white" strokeWidth={2.5} />
           </button>
           <span style={{ color: 'white', fontSize: '11px', fontWeight: 'bold', marginTop: '2px', opacity: 0.85 }}>
-            {content.comments}
+            {content.comments.length}
           </span>
         </div>
       )}
@@ -511,14 +512,13 @@ const Reel = ({ content, isActive }) => {
 };
 
 // Main App Component
-export default function VerticalScrollGallery() {
+export default function VerticalScrollGallery({ content }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [content] = useState(reelsContent); // Using imported content
   const containerRef = useRef(null);
   const isScrollingRef = useRef(false);
 
   const navigateTo = (newIndex) => {
-    if (newIndex >= 0 && newIndex < content.length && !isScrollingRef.current) {
+    if (newIndex >= 0 && newIndex < content.feed.length && !isScrollingRef.current) {
       isScrollingRef.current = true;
       setCurrentIndex(newIndex);
       
@@ -565,7 +565,7 @@ export default function VerticalScrollGallery() {
       window.removeEventListener('wheel', handleWheel);
       if (scrollTimeout) clearTimeout(scrollTimeout);
     };
-  }, [currentIndex, content.length]);
+  }, [currentIndex, content.feed.length]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -726,9 +726,9 @@ export default function VerticalScrollGallery() {
             zIndex: 1
           }}
         >
-          {content.map((item, index) => (
+          {content.feed.map((item, index) => (
             <Reel
-              key={item.id}
+              key={item.title}
               content={item}
               isActive={index === currentIndex}
             />
@@ -744,7 +744,7 @@ export default function VerticalScrollGallery() {
             gap: '5px',
             zIndex: 100
           }}>
-            {content.map((_, index) => (
+            {content.feed.map((_, index) => (
               <div
                 key={index}
                 style={{
