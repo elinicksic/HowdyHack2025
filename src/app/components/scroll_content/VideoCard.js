@@ -68,7 +68,7 @@ export function VideoCard({ content, onDoubleTap, isVisible }) {
         <>
           <video
             ref={videoRef}
-            src={"http://localhost:5000/videos/" + content.video_file}
+            src={"http://127.0.0.1:5000/videos/" + content.video_file}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             loop
             playsInline
