@@ -33,10 +33,10 @@ export function QuizCard({ content, isActive, onDoubleTap }) {
       }}
     >
       <div style={{ fontSize: '64px', marginBottom: '20px' }}>{content.emoji}</div>
-      <h2 style={{ fontSize: '22px', fontWeight: 'bold', color: 'white', marginBottom: '30px', textAlign: 'center', maxWidth: '90%' }}>
+      <h2 style={{ fontSize: '22px', fontWeight: 'bold', color: 'white', marginBottom: '30px', textAlign: 'center', maxWidth: '85%' }}>
         {content.question}
       </h2>
-      <div style={{ width: '100%', maxWidth: '320px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div style={{ width: '100%', maxWidth: '280px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {content.options.map((option, index) => {
           const isCorrect = index === content.correctAnswer;
           const isSelected = index === selectedAnswer;
