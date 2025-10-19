@@ -8,46 +8,6 @@ export default function VerticalScrollView({ content }) {
   const containerRef = useRef(null);
   const isScrollingRef = useRef(false);
 
-  // Track landscape and try to lock to portrait where supported
-  const [isLandscape, setIsLandscape] = useState(false);
-  useEffect(() => {
-    // Prevent page scrolling
-    const original = {
-      overflow: document.body.style.overflow,
-      position: document.body.style.position,
-      width: document.body.style.width,
-      height: document.body.style.height,
-    };
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
-    document.body.style.height = '100%';
-
-    // Try to lock orientation to portrait (works in some contexts/browsers)
-    const tryLock = async () => {
-      try {
-        if (screen.orientation?.lock) {
-          await screen.orientation.lock('portrait').catch(() => {});
-        }
-      } catch {}
-    };
-    tryLock();
-
-    // Listen for orientation changes
-    const mq = window.matchMedia('(orientation: landscape)');
-    const onChange = () => setIsLandscape(mq.matches);
-    onChange();
-    mq.addEventListener?.('change', onChange);
-
-    return () => {
-      document.body.style.overflow = original.overflow;
-      document.body.style.position = original.position;
-      document.body.style.width = original.width;
-      document.body.style.height = original.height;
-      mq.removeEventListener?.('change', onChange);
-    };
-  }, []);
-
   const navigateTo = useCallback((newIndex) => {
     if (stopScroll) return;
 
@@ -144,13 +104,9 @@ export default function VerticalScrollView({ content }) {
           padding: 0;
           box-sizing: border-box;
         }
-        html, body {
-          height: 100%;
-          overscroll-behavior: none; /* prevent scroll chaining/bounce */
-          background: #0a0a0a;
-        }
         body {
           overflow: hidden;
+          background: #0a0a0a;
         }
         @keyframes blob {
           0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
@@ -190,245 +146,204 @@ export default function VerticalScrollView({ content }) {
         }
       `}</style>
 
-      {/* Fixed viewport wrapper to prevent page scroll and bounce */}
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          width: '100vw',
-          height: '100dvh',
-          overflow: 'hidden',
-          touchAction: 'none',           // disable browser gestures; we handle touch
-          overscrollBehavior: 'none',    // no scroll chaining
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        {/* Background blobs */}
-        <div style={{
-          position: 'absolute',
-          bottom: '8%',
-          left: '12%',
-          width: '600px',
-          height: '600px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(59,130,246,0.35) 0%, transparent 70%)',
-          filter: 'blur(70px)',
-          animation: 'blob3 16s ease-in-out infinite',
-          pointerEvents: 'none'
-        }} />
+      <div style={{
+        position: 'absolute',
+        bottom: '8%',
+        left: '12%',
+        width: '600px',
+        height: '600px',
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(59,130,246,0.35) 0%, transparent 70%)',
+        filter: 'blur(70px)',
+        animation: 'blob3 16s ease-in-out infinite',
+        pointerEvents: 'none'
+      }} />
+      
+
+      <div style={{
+        position: 'absolute',
+        top: '25%',
+        right: '20%',
+        width: '450px',
+        height: '450px',
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(251,191,36,0.3) 0%, transparent 70%)',
+        filter: 'blur(70px)',
+        animation: 'blob4 14s ease-in-out infinite',
+        pointerEvents: 'none'
+      }} />
+
+      <div style={{
+        position: 'absolute',
+        bottom: '30%',
+        right: '8%',
+        width: '520px',
+        height: '520px',
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(34,197,94,0.3) 0%, transparent 70%)',
+        filter: 'blur(70px)',
+        animation: 'blob5 15s ease-in-out infinite',
+        pointerEvents: 'none'
+      }} />
+
+      <div style={{
+        position: 'absolute',
+        top: '60%',
+        left: '25%',
+        width: '480px',
+        height: '480px',
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(239,68,68,0.3) 0%, transparent 70%)',
+        filter: 'blur(70px)',
+        animation: 'blob6 17s ease-in-out infinite',
+        pointerEvents: 'none'
+      }} />
+
+      {/* Translucent Glassmorphic Border Wrapper */}
+      <div style={{
+        position: 'relative',
+        width: 'min(calc((100vh - 80px) * 9 / 16), calc(100vw - 40px))',
+        height: 'calc(100vh - 80px)',
+        borderRadius: '36px',
+        background: 'rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(40px) saturate(200%)',
+        border: '1px solid rgba(255, 255, 255, 0.18)',
+        boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 0 60px rgba(255, 255, 255, 0.05)',
+        padding: '8px',
+      }}>
         
+        {/* Content Container */}
+        <div
+          ref={containerRef}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          style={{
+            width: '100%',
+            height: '100%',
+            overflow: 'hidden',
+            scrollSnapType: 'y mandatory',
+            backgroundColor: '#000',
+            position: 'relative',
+            borderRadius: '28px',
+            zIndex: 1
+          }}
+        >
+          {content.feed.map((item, index) => (
+            <FeedItem
+              key={item.title}
+              content={item}
+              setStopScroll={setStopScroll}
+              isActive={index === currentIndex}
+            />
+          ))}
 
-        <div style={{
-          position: 'absolute',
-          top: '25%',
-          right: '20%',
-          width: '450px',
-          height: '450px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(251,191,36,0.3) 0%, transparent 70%)',
-          filter: 'blur(70px)',
-          animation: 'blob4 14s ease-in-out infinite',
-          pointerEvents: 'none'
-        }} />
-
-        <div style={{
-          position: 'absolute',
-          bottom: '30%',
-          right: '8%',
-          width: '520px',
-          height: '520px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(34,197,94,0.3) 0%, transparent 70%)',
-          filter: 'blur(70px)',
-          animation: 'blob5 15s ease-in-out infinite',
-          pointerEvents: 'none'
-        }} />
-
-        <div style={{
-          position: 'absolute',
-          top: '60%',
-          left: '25%',
-          width: '480px',
-          height: '480px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(239,68,68,0.3) 0%, transparent 70%)',
-          filter: 'blur(70px)',
-          animation: 'blob6 17s ease-in-out infinite',
-          pointerEvents: 'none'
-        }} />
-
-        {/* Translucent Glassmorphic Border Wrapper */}
-        <div style={{
-          position: 'relative',
-          width: 'min(calc((100dvh - 80px) * 9 / 16), calc(100vw - 40px))',
-          height: 'calc(100dvh - 80px)',
-          borderRadius: '36px',
-          background: 'rgba(255, 255, 255, 0.05)',
-          backdropFilter: 'blur(40px) saturate(200%)',
-          border: '1px solid rgba(255, 255, 255, 0.18)',
-          boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 0 60px rgba(255, 255, 255, 0.05)',
-          padding: '8px',
-        }}>
+          {/* Progress Dots */}
+          <div style={{
+            position: 'absolute',
+            top: '8%',
+            left: '3%',
+            width: '550px',
+            height: '550px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(168,85,247,0.35) 0%, transparent 70%)',
+            filter: 'blur(70px)',
+            animation: 'blob 10s ease-in-out infinite',
+            pointerEvents: 'none'
+          }} />
           
-          {/* Content Container */}
-          <div
-            ref={containerRef}
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-            style={{
-              width: '100%',
-              height: '100%',
-              overflow: 'hidden',
-              scrollSnapType: 'y mandatory',
-              backgroundColor: '#000',
-              position: 'relative',
-              borderRadius: '28px',
-              zIndex: 1,
-              overscrollBehavior: 'none', // no bounce within container
-            }}
-          >
-            {content.feed.map((item, index) => (
-              <FeedItem
-                key={item.title}
-                content={item}
-                setStopScroll={setStopScroll}
-                isActive={index === currentIndex}
+          <div style={{
+            position: 'absolute',
+            top: '45%',
+            right: '2%',
+            width: '500px',
+            height: '500px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(236,72,153,0.35) 0%, transparent 70%)',
+            filter: 'blur(70px)',
+            animation: 'blob2 13s ease-in-out infinite',
+            pointerEvents: 'none'
+          }} />
+
+          <div style={{
+            position: 'absolute',
+            bottom: '8%',
+            left: '12%',
+            width: '600px',
+            height: '600px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(59,130,246,0.35) 0%, transparent 70%)',
+            filter: 'blur(70px)',
+            animation: 'blob3 16s ease-in-out infinite',
+            pointerEvents: 'none'
+          }} />
+
+          <div style={{
+            position: 'absolute',
+            top: '25%',
+            right: '20%',
+            width: '450px',
+            height: '450px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(251,191,36,0.3) 0%, transparent 70%)',
+            filter: 'blur(70px)',
+            animation: 'blob4 14s ease-in-out infinite',
+            pointerEvents: 'none'
+          }} />
+
+          <div style={{
+            position: 'absolute',
+            bottom: '30%',
+            right: '8%',
+            width: '520px',
+            height: '520px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(34,197,94,0.3) 0%, transparent 70%)',
+            filter: 'blur(70px)',
+            animation: 'blob5 15s ease-in-out infinite',
+            pointerEvents: 'none'
+          }} />
+
+          <div style={{
+            position: 'absolute',
+            top: '60%',
+            left: '25%',
+            width: '480px',
+            height: '480px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(239,68,68,0.3) 0%, transparent 70%)',
+            filter: 'blur(70px)',
+            animation: 'blob6 17s ease-in-out infinite',
+            pointerEvents: 'none'
+          }} />
+
+          {/* Translucent Glassmorphic Border Wrapper */}
+          <div style={{
+            position: 'relative',
+            width: 'min(calc((100vh - 80px) * 9 / 16), calc(100vw - 40px))',
+            height: 'calc(100vh - 80px)',
+            borderRadius: '36px',
+            background: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(40px) saturate(200%)',
+            border: '1px solid rgba(255, 255, 255, 0.18)',
+            boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 0 60px rgba(255, 255, 255, 0.05)',
+            padding: '8px',
+          }}>
+            {content.feed.map((_, index) => (
+              <div
+                key={index}
+                style={{
+                  width: currentIndex === index ? '20px' : '5px',
+                  height: '5px',
+                  borderRadius: '3px',
+                  background: currentIndex === index ? 'white' : 'rgba(255, 255, 255, 0.5)',
+                  transition: 'all 0.3s ease',
+                  cursor: 'pointer'
+                }}
+                onClick={() => navigateTo(index)}
               />
             ))}
-
-            {/* Progress Dots + inner blobs */}
-            <div style={{
-              position: 'absolute',
-              top: '8%',
-              left: '3%',
-              width: '550px',
-              height: '550px',
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(168,85,247,0.35) 0%, transparent 70%)',
-              filter: 'blur(70px)',
-              animation: 'blob 10s ease-in-out infinite',
-              pointerEvents: 'none'
-            }} />
-            
-            <div style={{
-              position: 'absolute',
-              top: '45%',
-              right: '2%',
-              width: '500px',
-              height: '500px',
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(236,72,153,0.35) 0%, transparent 70%)',
-              filter: 'blur(70px)',
-              animation: 'blob2 13s ease-in-out infinite',
-              pointerEvents: 'none'
-            }} />
-
-            <div style={{
-              position: 'absolute',
-              bottom: '8%',
-              left: '12%',
-              width: '600px',
-              height: '600px',
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(59,130,246,0.35) 0%, transparent 70%)',
-              filter: 'blur(70px)',
-              animation: 'blob3 16s ease-in-out infinite',
-              pointerEvents: 'none'
-            }} />
-
-            <div style={{
-              position: 'absolute',
-              top: '25%',
-              right: '20%',
-              width: '450px',
-              height: '450px',
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(251,191,36,0.3) 0%, transparent 70%)',
-              filter: 'blur(70px)',
-              animation: 'blob4 14s ease-in-out infinite',
-              pointerEvents: 'none'
-            }} />
-
-            <div style={{
-              position: 'absolute',
-              bottom: '30%',
-              right: '8%',
-              width: '520px',
-              height: '520px',
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(34,197,94,0.3) 0%, transparent 70%)',
-              filter: 'blur(70px)',
-              animation: 'blob5 15s ease-in-out infinite',
-              pointerEvents: 'none'
-            }} />
-
-            <div style={{
-              position: 'absolute',
-              top: '60%',
-              left: '25%',
-              width: '480px',
-              height: '480px',
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(239,68,68,0.3) 0%, transparent 70%)',
-              filter: 'blur(70px)',
-              animation: 'blob6 17s ease-in-out infinite',
-              pointerEvents: 'none'
-            }} />
-
-            {/* Translucent Glassmorphic Border Wrapper */}
-            <div style={{
-              position: 'relative',
-              width: 'min(calc((100dvh - 80px) * 9 / 16), calc(100vw - 40px))',
-              height: 'calc(100dvh - 80px)',
-              borderRadius: '36px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              backdropFilter: 'blur(40px) saturate(200%)',
-              border: '1px solid rgba(255, 255, 255, 0.18)',
-              boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 0 60px rgba(255, 255, 255, 0.05)',
-              padding: '8px',
-            }}>
-              {content.feed.map((_, index) => (
-                <div
-                  key={index}
-                  style={{
-                    width: currentIndex === index ? '20px' : '5px',
-                    height: '5px',
-                    borderRadius: '3px',
-                    background: currentIndex === index ? 'white' : 'rgba(255, 255, 255, 0.5)',
-                    transition: 'all 0.3s ease',
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => navigateTo(index)}
-                />
-              ))}
-            </div>
           </div>
         </div>
-
-        {/* Portrait overlay for landscape as a fallback */}
-        {isLandscape && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0,0,0,0.9)',
-              color: '#fff',
-              zIndex: 9999,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textAlign: 'center',
-              padding: '24px',
-            }}
-          >
-            <div>
-              <div style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>Rotate to portrait</div>
-              <div style={{ opacity: 0.8 }}>This experience is best in upright mode.</div>
-            </div>
-          </div>
-        )}
       </div>
     </>
   );

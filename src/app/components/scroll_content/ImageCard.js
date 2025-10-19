@@ -103,7 +103,7 @@ export function ImageCard({ content, onDoubleTap }) {
             {imageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={"/images/" + imageUrl}
+                src={"http://10.244.1.145:5000/images/" + imageUrl}
                 alt={alt}
                 style={{
                   width: '100%',
