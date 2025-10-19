@@ -15,7 +15,7 @@ const generateComments = () => [
 ];
 
 // Quiz Card Component
-const QuizCard = ({ content, isActive }) => {
+const QuizCard = ({ content, isActive, onDoubleTap }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
 
@@ -32,16 +32,20 @@ const QuizCard = ({ content, isActive }) => {
   }, [isActive]);
 
   return (
-    <div style={{
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '30px 20px',
-      background: content.background
-    }}>
+    <div 
+      onDoubleClick={onDoubleTap}
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '30px 20px',
+        background: content.background,
+        cursor: 'pointer'
+      }}
+    >
       <div style={{ fontSize: '64px', marginBottom: '20px' }}>{content.emoji}</div>
       <h2 style={{ fontSize: '22px', fontWeight: 'bold', color: 'white', marginBottom: '30px', textAlign: 'center', maxWidth: '90%' }}>
         {content.question}
@@ -91,18 +95,22 @@ const QuizCard = ({ content, isActive }) => {
 };
 
 // Regular Content Card Component
-const ContentCard = ({ content }) => {
+const ContentCard = ({ content, onDoubleTap }) => {
   return (
-    <div style={{
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '30px 20px',
-      background: content.background
-    }}>
+    <div 
+      onDoubleClick={onDoubleTap}
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '30px 20px',
+        background: content.background,
+        cursor: 'pointer'
+      }}
+    >
       <div style={{ fontSize: '96px', marginBottom: '24px' }}>{content.emoji}</div>
       <h2 style={{ fontSize: '28px', fontWeight: 'bold', color: 'white', marginBottom: '16px', textAlign: 'center', maxWidth: '90%' }}>
         {content.title}
@@ -156,7 +164,6 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
 
   return (
     <>
-      {/* Backdrop */}
       <div
         onClick={onClose}
         style={{
@@ -168,7 +175,6 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
         }}
       />
 
-      {/* Comments Sheet */}
       <div style={{
         position: 'fixed',
         bottom: 0,
@@ -193,7 +199,6 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
           }
         `}</style>
 
-        {/* Header */}
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -217,7 +222,6 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
           </button>
         </div>
 
-        {/* Comments List */}
         <div style={{
           flex: 1,
           overflowY: 'auto',
@@ -228,7 +232,6 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
         }}>
           {comments.map((comment) => (
             <div key={comment.id} style={{ display: 'flex', gap: '10px' }}>
-              {/* Avatar */}
               <div style={{
                 width: '36px',
                 height: '36px',
@@ -243,7 +246,6 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
                 {comment.avatar}
               </div>
 
-              {/* Comment Content */}
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '3px' }}>
                   <span style={{ color: 'white', fontWeight: 'bold', fontSize: '13px' }}>
@@ -275,7 +277,6 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
           ))}
         </div>
 
-        {/* Input Field */}
         <div style={{
           padding: '12px 16px',
           borderTop: '1px solid rgba(255, 255, 255, 0.1)',
@@ -324,11 +325,28 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
   );
 };
 
-// Main Reel Component
+// Main Reel Component with Heart Animation
 const Reel = ({ content, isActive }) => {
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [showHeartAnimation, setShowHeartAnimation] = useState(false);
+
+  const handleDoubleTap = () => {
+    if (!liked) {
+      setLiked(true);
+    }
+    setShowHeartAnimation(true);
+    setTimeout(() => setShowHeartAnimation(false), 1000);
+  };
+
+  const handleLikeClick = () => {
+    setLiked(!liked);
+    if (!liked) {
+      setShowHeartAnimation(true);
+      setTimeout(() => setShowHeartAnimation(false), 1000);
+    }
+  };
 
   return (
     <div style={{
@@ -338,14 +356,51 @@ const Reel = ({ content, isActive }) => {
       scrollSnapAlign: 'start',
       overflow: 'hidden'
     }}>
-      {/* Main Content */}
       {content.type === 'quiz' ? (
-        <QuizCard content={content} isActive={isActive} />
+        <QuizCard content={content} isActive={isActive} onDoubleTap={handleDoubleTap} />
       ) : (
-        <ContentCard content={content} />
+        <ContentCard content={content} onDoubleTap={handleDoubleTap} />
       )}
 
-      {/* Right Side Action Buttons */}
+      {showHeartAnimation && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          pointerEvents: 'none',
+          zIndex: 50,
+          animation: 'heartPop 1s ease-out'
+        }}>
+          <Heart size={120} color="#ff4458" fill="#ff4458" strokeWidth={0} />
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes heartPop {
+          0% {
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+          }
+          15% {
+            transform: translate(-50%, -50%) scale(1.2);
+            opacity: 1;
+          }
+          30% {
+            transform: translate(-50%, -50%) scale(0.95);
+            opacity: 1;
+          }
+          45% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0;
+          }
+        }
+      `}</style>
+
       <div style={{
         position: 'absolute',
         right: '12px',
@@ -355,11 +410,10 @@ const Reel = ({ content, isActive }) => {
         gap: '16px',
         zIndex: 10
       }}>
-        {/* Like Button */}
         {content.likes && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <button
-              onClick={() => setLiked(!liked)}
+              onClick={handleLikeClick}
               style={{
                 background: 'none',
                 border: 'none',
@@ -370,7 +424,7 @@ const Reel = ({ content, isActive }) => {
               onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
               onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
             >
-              <Heart size={28} color="white" fill={liked ? 'white' : 'none'} strokeWidth={2.5} />
+              <Heart size={28} color={liked ? '#ff4458' : 'white'} fill={liked ? '#ff4458' : 'none'} strokeWidth={2.5} />
             </button>
             <span style={{ color: 'white', fontSize: '11px', fontWeight: 'bold', marginTop: '2px' }}>
               {(content.likes + (liked ? 1 : 0)).toLocaleString()}
@@ -378,7 +432,6 @@ const Reel = ({ content, isActive }) => {
           </div>
         )}
 
-        {/* Comments Button */}
         {content.comments && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <button
@@ -401,7 +454,6 @@ const Reel = ({ content, isActive }) => {
           </div>
         )}
 
-        {/* Share Button */}
         <button
           style={{
             background: 'none',
@@ -416,7 +468,6 @@ const Reel = ({ content, isActive }) => {
           <Share2 size={26} color="white" strokeWidth={2.5} />
         </button>
 
-        {/* Bookmark Button */}
         <button
           onClick={() => setBookmarked(!bookmarked)}
           style={{
@@ -433,7 +484,6 @@ const Reel = ({ content, isActive }) => {
         </button>
       </div>
 
-      {/* Bottom Info - Instagram style */}
       <div style={{
         position: 'absolute',
         bottom: '16px',
@@ -476,7 +526,6 @@ const Reel = ({ content, isActive }) => {
         </p>
       </div>
 
-      {/* Type Indicator */}
       <div style={{
         position: 'absolute',
         top: '16px',
@@ -492,7 +541,6 @@ const Reel = ({ content, isActive }) => {
         {content.type === 'quiz' ? '🧠 Quiz' : content.type === 'video' ? '🎥 Video' : '📖 Lesson'}
       </div>
 
-      {/* Comments Sheet */}
       <CommentsSheet
         isOpen={showComments}
         onClose={() => setShowComments(false)}
@@ -549,58 +597,57 @@ export default function VerticalScrollGallery() {
   ]);
   const containerRef = useRef(null);
   const isScrollingRef = useRef(false);
-  const wheelAccumulator = useRef(0);
-  const wheelTimeoutRef = useRef(null);
 
-  // Navigate to specific index
   const navigateTo = (newIndex) => {
     if (newIndex >= 0 && newIndex < content.length && !isScrollingRef.current) {
       isScrollingRef.current = true;
       setCurrentIndex(newIndex);
       
       if (containerRef.current) {
-        containerRef.current.scrollTop = newIndex * containerRef.current.offsetHeight;
+        const targetScroll = newIndex * containerRef.current.clientHeight;
+        containerRef.current.scrollTo({
+          top: targetScroll,
+          behavior: 'smooth'
+        });
       }
       
       setTimeout(() => {
         isScrollingRef.current = false;
-      }, 700);
+      }, 600);
     }
   };
 
-  // Wheel/Trackpad Handler
   useEffect(() => {
+    let accumulatedDelta = 0;
+    let scrollTimeout = null;
+
     const handleWheel = (e) => {
       e.preventDefault();
-      
-      wheelAccumulator.current += e.deltaY;
-      
-      if (wheelTimeoutRef.current) {
-        clearTimeout(wheelTimeoutRef.current);
+      accumulatedDelta += e.deltaY;
+
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
       }
-      
-      wheelTimeoutRef.current = setTimeout(() => {
-        if (Math.abs(wheelAccumulator.current) > 30) {
-          if (wheelAccumulator.current > 0) {
+
+      scrollTimeout = setTimeout(() => {
+        if (Math.abs(accumulatedDelta) > 20) {
+          if (accumulatedDelta > 0) {
             navigateTo(currentIndex + 1);
           } else {
             navigateTo(currentIndex - 1);
           }
         }
-        wheelAccumulator.current = 0;
-      }, 50);
+        accumulatedDelta = 0;
+      }, 30);
     };
 
-    document.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('wheel', handleWheel, { passive: false });
     return () => {
-      document.removeEventListener('wheel', handleWheel);
-      if (wheelTimeoutRef.current) {
-        clearTimeout(wheelTimeoutRef.current);
-      }
+      window.removeEventListener('wheel', handleWheel);
+      if (scrollTimeout) clearTimeout(scrollTimeout);
     };
-  }, [currentIndex]);
+  }, [currentIndex, content.length]);
 
-  // Keyboard Handler
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowDown') {
@@ -616,7 +663,6 @@ export default function VerticalScrollGallery() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentIndex]);
 
-  // Touch Handler
   const touchStartY = useRef(0);
   
   const handleTouchStart = (e) => {
@@ -643,7 +689,10 @@ export default function VerticalScrollGallery() {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#000'
+      backgroundColor: '#0a0a0a',
+      position: 'relative',
+      overflow: 'hidden',
+      padding: '40px 20px'
     }}>
       <style jsx global>{`
         * {
@@ -653,57 +702,199 @@ export default function VerticalScrollGallery() {
         }
         body {
           overflow: hidden;
-          background: #000;
+          background: #0a0a0a;
+        }
+        @keyframes blob {
+          0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+          33% { transform: translate(40px, -60px) scale(1.2) rotate(120deg); }
+          66% { transform: translate(-30px, 30px) scale(0.85) rotate(240deg); }
+          100% { transform: translate(0px, 0px) scale(1) rotate(360deg); }
+        }
+        @keyframes blob2 {
+          0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+          33% { transform: translate(-50px, 40px) scale(1.1) rotate(-120deg); }
+          66% { transform: translate(60px, -40px) scale(0.9) rotate(-240deg); }
+          100% { transform: translate(0px, 0px) scale(1) rotate(-360deg); }
+        }
+        @keyframes blob3 {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, 50px) scale(1.25); }
+          66% { transform: translate(-40px, -30px) scale(0.8); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+        @keyframes blob4 {
+          0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+          33% { transform: translate(-35px, -45px) scale(1.15) rotate(90deg); }
+          66% { transform: translate(45px, 35px) scale(0.95) rotate(180deg); }
+          100% { transform: translate(0px, 0px) scale(1) rotate(270deg); }
+        }
+        @keyframes blob5 {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(55px, -35px) scale(1.3); }
+          66% { transform: translate(-25px, 45px) scale(0.75); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+        @keyframes blob6 {
+          0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+          33% { transform: translate(-45px, 55px) scale(1.05) rotate(-90deg); }
+          66% { transform: translate(35px, -25px) scale(1.2) rotate(-180deg); }
+          100% { transform: translate(0px, 0px) scale(1) rotate(-270deg); }
         }
       `}</style>
 
-      {/* Phone Container - Fixed 9:16 aspect ratio */}
-      <div
-        ref={containerRef}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        style={{
-          width: 'min(calc(100vh * 9 / 16), 100vw)',
-          height: 'min(100vh, calc(100vw * 16 / 9))',
-          overflow: 'hidden',
-          scrollSnapType: 'y mandatory',
-          backgroundColor: '#000',
-          position: 'relative',
-          boxShadow: '0 0 50px rgba(0, 0, 0, 0.5)'
-        }}
-      >
-        {content.map((item, index) => (
-          <Reel
-            key={item.id}
-            content={item}
-            isActive={index === currentIndex}
-          />
-        ))}
+      {/* MANY MORE Floating Gradient Blobs with Higher Opacity */}
+      <div style={{
+        position: 'absolute',
+        top: '8%',
+        left: '3%',
+        width: '550px',
+        height: '550px',
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(168,85,247,0.35) 0%, transparent 70%)',
+        filter: 'blur(70px)',
+        animation: 'blob 10s ease-in-out infinite',
+        pointerEvents: 'none'
+      }} />
 
-        {/* Bottom Progress Dots */}
+      <div style={{
+        position: 'absolute',
+        top: '45%',
+        right: '2%',
+        width: '500px',
+        height: '500px',
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(236,72,153,0.35) 0%, transparent 70%)',
+        filter: 'blur(70px)',
+        animation: 'blob2 13s ease-in-out infinite',
+        pointerEvents: 'none'
+      }} />
+
+      <div style={{
+        position: 'absolute',
+        bottom: '8%',
+        left: '12%',
+        width: '600px',
+        height: '600px',
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(59,130,246,0.35) 0%, transparent 70%)',
+        filter: 'blur(70px)',
+        animation: 'blob3 16s ease-in-out infinite',
+        pointerEvents: 'none'
+      }} />
+
+      <div style={{
+        position: 'absolute',
+        top: '25%',
+        right: '20%',
+        width: '450px',
+        height: '450px',
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(251,191,36,0.3) 0%, transparent 70%)',
+        filter: 'blur(70px)',
+        animation: 'blob4 14s ease-in-out infinite',
+        pointerEvents: 'none'
+      }} />
+
+      <div style={{
+        position: 'absolute',
+        bottom: '30%',
+        right: '8%',
+        width: '520px',
+        height: '520px',
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(34,197,94,0.3) 0%, transparent 70%)',
+        filter: 'blur(70px)',
+        animation: 'blob5 15s ease-in-out infinite',
+        pointerEvents: 'none'
+      }} />
+
+      <div style={{
+        position: 'absolute',
+        top: '60%',
+        left: '25%',
+        width: '480px',
+        height: '480px',
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(239,68,68,0.3) 0%, transparent 70%)',
+        filter: 'blur(70px)',
+        animation: 'blob6 17s ease-in-out infinite',
+        pointerEvents: 'none'
+      }} />
+
+      {/* Thicker Glassmorphic Wrapper with Enhanced Warping Effect */}
+      <div style={{
+        position: 'relative',
+        width: 'min(calc((100vh - 80px) * 9 / 16), calc(100vw - 40px))',
+        height: 'calc(100vh - 80px)',
+        borderRadius: '36px',
+        padding: '6px',
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.25) 100%)',
+        boxShadow: '0 0 100px rgba(0, 0, 0, 0.6), inset 0 0 60px rgba(255, 255, 255, 0.08)',
+      }}>
+        {/* Inner Glass Border with Strong Backdrop Filter */}
         <div style={{
           position: 'absolute',
-          bottom: '70px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex',
-          gap: '5px',
-          zIndex: 100
-        }}>
-          {content.map((_, index) => (
-            <div
-              key={index}
-              style={{
-                width: currentIndex === index ? '20px' : '5px',
-                height: '5px',
-                borderRadius: '3px',
-                background: currentIndex === index ? 'white' : 'rgba(255, 255, 255, 0.5)',
-                transition: 'all 0.3s ease',
-                cursor: 'pointer'
-              }}
-              onClick={() => navigateTo(index)}
+          inset: 0,
+          borderRadius: '36px',
+          padding: '3px',
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.15) 75%, rgba(255,255,255,0.35) 100%)',
+          WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+          WebkitMaskComposite: 'xor',
+          maskComposite: 'exclude',
+          backdropFilter: 'blur(50px) saturate(180%)',
+          pointerEvents: 'none',
+          zIndex: 2
+        }} />
+
+        {/* Content Container */}
+        <div
+          ref={containerRef}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          style={{
+            width: '100%',
+            height: '100%',
+            overflow: 'hidden',
+            scrollSnapType: 'y mandatory',
+            backgroundColor: '#000',
+            position: 'relative',
+            borderRadius: '30px',
+            zIndex: 1
+          }}
+        >
+          {content.map((item, index) => (
+            <Reel
+              key={item.id}
+              content={item}
+              isActive={index === currentIndex}
             />
           ))}
+
+          {/* Progress Dots */}
+          <div style={{
+            position: 'absolute',
+            bottom: '70px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            gap: '5px',
+            zIndex: 100
+          }}>
+            {content.map((_, index) => (
+              <div
+                key={index}
+                style={{
+                  width: currentIndex === index ? '20px' : '5px',
+                  height: '5px',
+                  borderRadius: '3px',
+                  background: currentIndex === index ? 'white' : 'rgba(255, 255, 255, 0.5)',
+                  transition: 'all 0.3s ease',
+                  cursor: 'pointer'
+                }}
+                onClick={() => navigateTo(index)}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
