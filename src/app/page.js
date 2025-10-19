@@ -24,7 +24,7 @@ export default function HomePage() {
 
   const suggestedTopics = [
     {title: "Python Basics", feed_id: "1fa3a63b-d95c-47c7-b707-2dda8fc8e0d7"},
-    {title: "Common Polyatomic-Ions", feed_id: "477fedb5-ba7b-498b-881d-8ab1a54828c4"}
+    {title: "Common Polyatomic-Ions", feed_id: "477fedb5-ba7b-498b-881d-8ab1a54828c4"},
   ];
 
   const [currentTopicIndex, setCurrentTopicIndex] = useState(0);
@@ -96,7 +96,6 @@ export default function HomePage() {
   const handleSuggestedTopicClick = (topic) => {
     loadPregenerated(topic.feed_id);
   };
-
   const loadPregenerated = async (feed_id) => {
     try {
       setLoading(true);

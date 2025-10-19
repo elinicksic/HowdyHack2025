@@ -86,6 +86,28 @@ export const reelsContent = [
   comments: 89,
   muted: true,  // Start muted (Instagram style)
   autoPlay: true  // Auto-play when visible
+},
+{
+  id: 9,
+  type: 'video',
+  title: 'Skateboard Video',
+  videoUrl: '/Skate.mp4',  // Add this line
+  emoji: '🦆',
+  likes: 2456,
+  comments: 89,
+  muted: true,  // Start muted (Instagram style)
+  autoPlay: true  // Auto-play when visible
+},
+{
+  id: 10,
+  type: 'video',
+  title: 'Pizza Video',
+  videoUrl: '/Pizza.mp4',  // Add this line
+  emoji: '🦆',
+  likes: 2456,
+  comments: 89,
+  muted: true,  // Start muted (Instagram style)
+  autoPlay: true  // Auto-play when visible
 }
 
 ];

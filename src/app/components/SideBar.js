@@ -13,7 +13,7 @@ export default function PopUp() {
   const [sidebar, setSidebar] = useState(true);
 
   const showSidebar = () => setSidebar(sidebar);
-
+    
 
   useEffect(() => {
     if (sidebar) {
