@@ -174,18 +174,17 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
       <div
         onClick={onClose}
         style={{
-          position: 'fixed',
+          // position: 'fixed',
+          position: 'absolute',
           inset: 0,
           background: 'rgba(0, 0, 0, 0.7)',
           zIndex: 999,
           animation: 'fadeIn 0.3s ease'
         }}
       />
-
-      
-
       <div style={{
-        position: 'fixed',
+        // position: 'fixed',
+        position: 'absolute',
         bottom: 0,
         left: 0,
         right: 0,
@@ -728,7 +727,8 @@ const Reel = ({ content, isActive, setStopScroll }) => {
         borderRadius: '14px',
         color: 'white',
         fontSize: '11px',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        overflow: 'hidden'
       }}>
         {content.type === 'quiz' ? '🧠 Quiz' : 
          content.type === 'video' ? '🎥 Video' : 
@@ -783,8 +783,8 @@ export default function VerticalScrollGallery({ content }) {
 
     const handleWheel = (e) => {
       // Always prevent default so the page doesn’t move
-      e.preventDefault();
       if (stopScroll) return; // block navigation when comments are open
+      e.preventDefault();
 
       accumulatedDelta += e.deltaY;
 
