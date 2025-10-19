@@ -783,8 +783,8 @@ export default function VerticalScrollGallery({ content }) {
 
     const handleWheel = (e) => {
       // Always prevent default so the page doesn’t move
-      e.preventDefault();
       if (stopScroll) return; // block navigation when comments are open
+      e.preventDefault();
 
       accumulatedDelta += e.deltaY;
 
