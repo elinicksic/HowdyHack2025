@@ -14,6 +14,7 @@ export default function PopUp() {
 
   const showSidebar = () => setSidebar(sidebar);
 
+
   useEffect(() => {
     if (sidebar) {
       document.body.classList.add('sidebar-open');
@@ -24,6 +25,7 @@ export default function PopUp() {
 
   return (
     <>
+
       <IconContext.Provider value={{ color: "undefined" }}>
         {/* Floating Menu Button */}
         {/* <div className="floating-menu-button">
@@ -35,8 +37,11 @@ export default function PopUp() {
         {/* Overlay - removed to allow background interaction */}
 
         {/* Floating Sidebar Items */}
+        
+
         <nav className={sidebar ? "nav-menu active" : "nav-menu"}>
         <ul className="nav-menu-items">
+            
             {SidebarData.map((item, index) => {
             return (
                 <li key={index} className="nav-item">
@@ -50,7 +55,7 @@ export default function PopUp() {
                             
                             {/* Use a DIV instead of UL to wrap the inner links */}
                             {item.categories && item.categories.length > 0 && (
-                                <div className="nav-subcategories-group"> 
+                                <div>
                                     {item.categories.map((item1, index1) => (
                                         <div key={index1} className="nav-part-item"> {/* Use DIV or SPAN instead of LI */}
                                             <Link href={item1.path} onClick={showSidebar}>
@@ -79,8 +84,9 @@ export default function PopUp() {
           z-index: 1001;
           pointer-events: auto;
         }
+
         .cool-top{
-        display: flex;
+            display: flex;
             align-items: center;
             justify-content: center;
 
@@ -186,16 +192,30 @@ export default function PopUp() {
           -webkit-backdrop-filter: blur(20px) saturate(180%);
           border: 1px solid rgba(255, 255, 255, 0.15);
           border-radius: 24px;
-          padding: 100px 32px;
+          padding: 32px;
           display: flex;
-          align-items: center;
-          gap: 20px;
+          flex-direction: column;
+          gap: 24px;
           min-width: 280px;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.3);
           position: relative;
           overflow: hidden;
         }
+        
+        .nav-card > div {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          width: 100%;
+        }
+        
+        .nav-part-item {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
         .nav-card-min{
           background: rgba(76, 70, 117, 0.4);
           backdrop-filter: blur(20px) saturate(180%);
@@ -230,17 +250,6 @@ export default function PopUp() {
           pointer-events: none;
         }
 
-        .nav-card:hover {
-          background: rgba(76, 70, 117, 0.6);
-          border-color: rgba(255, 255, 255, 0.3);
-          transform: translateX(10px) scale(1.03);
-          box-shadow: 0 12px 40px 0 rgba(139, 123, 209, 0.5);
-        }
-
-        .nav-card:hover::before {
-          opacity: 1;
-        }
-
         .nav-icon {
           color: #ffffff;
           font-size: 1.8rem;
@@ -249,10 +258,6 @@ export default function PopUp() {
           justify-content: center;
           filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
           transition: transform 0.3s ease;
-        }
-
-        .nav-card:hover .nav-icon {
-          transform: scale(1.1) rotate(-5deg);
         }
 
         .nav-title {
@@ -268,7 +273,6 @@ export default function PopUp() {
           font-weight: 600;
           letter-spacing: 0.5px;
           text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-          margin-top: 100px;
         }
 
         /* Prevent body scroll */

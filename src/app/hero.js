@@ -2,6 +2,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Heart, MessageCircle, Share2, Bookmark, X, Send } from 'lucide-react';
 import { reelsContent } from './data/reelsContent';
+import Button from '@mui/material/Button';
+
+import { LuMousePointer2 } from "react-icons/lu";
 import PopUp from "./components/SideBar";
 import { 
   QuizCard, 
@@ -12,6 +15,9 @@ import {
   FlashCard, 
   ListCard 
 } from './components/ReelTypes';
+const handleClick = () => {
+    alert('Button clicked!');
+  };
 
 // Sample comments data
 const generateComments = () => [
@@ -71,6 +77,8 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
         }}
       />
 
+      
+
       <div style={{
         position: 'fixed',
         bottom: 0,
@@ -117,6 +125,7 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
           >
             <X size={22} color="white" />
           </button>
+          
         </div>
 
         <div style={{
@@ -705,7 +714,32 @@ export default function VerticalScrollGallery() {
           padding: '20px'
         }}>
           <PopUp/>
-          
+          <Button
+            variant="contained"
+            color="primary"
+            href="/"
+            
+            // ----------------------------------------------------------------
+            // CSS Styling via the 'sx' prop
+            // ----------------------------------------------------------------
+            sx={{
+              // 1. Set the positioning
+              position: 'absolute',
+              
+              // 2. Define the exact location (Top-Left)
+              top: '20px',    // 20 pixels down from the top edge
+              left: '20px',   // 20 pixels in from the left edge
+              
+              // 3. Ensure it appears above other clutter
+              zIndex: 100,    // A high z-index is useful here
+              
+              // Optional: Add some stylistic flair
+              fontWeight: 'bold',
+              padding: '10px 20px',
+            }}
+          >
+            Home page
+          </Button>
           {/* Floating Gradient Blobs */}
           <div style={{
             position: 'absolute',
