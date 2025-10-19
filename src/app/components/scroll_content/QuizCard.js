@@ -5,15 +5,21 @@ export function QuizCard({ content, isActive, onDoubleTap }) {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [showGoodWork, setShowGoodWork] = useState(false);
+  const [showBadWork, setShowBadWork] = useState(false);
 
   const handleAnswer = (index) => {
     setSelectedAnswer(index);
     setShowResult(true);
     
-    // Show good work image if correct
-    if (index === content.correctAnswer) {
+    // Show good work image if correct, bad work if incorrect
+    if (index === content.correct_idx) {
+      console.log('Correct answer! Showing goodWork.png');
       setShowGoodWork(true);
-      setTimeout(() => setShowGoodWork(false), 2000); // Show for 2 seconds
+      setTimeout(() => setShowGoodWork(false), 2000);
+    } else {
+      console.log('Incorrect answer! Showing badWork.png');
+      setShowBadWork(true);
+      setTimeout(() => setShowBadWork(false), 2000);
     }
   };
 
@@ -22,6 +28,7 @@ export function QuizCard({ content, isActive, onDoubleTap }) {
       setSelectedAnswer(null);
       setShowResult(false);
       setShowGoodWork(false);
+      setShowBadWork(false);
     }
   }, [isActive]);
 
@@ -94,11 +101,43 @@ export function QuizCard({ content, isActive, onDoubleTap }) {
           left: '50%',
           transform: 'translate(-50%, -50%)',
           zIndex: 100,
-          animation: 'goodWorkPop 2s ease-out'
+          animation: 'goodWorkPop 2s ease-out',
+          pointerEvents: 'none'
         }}>
           <img 
             src="/goodWork.png" 
             alt="Good Work!"
+            onError={(e) => {
+              console.error('Failed to load goodWork.png');
+              e.target.style.display = 'none';
+            }}
+            style={{
+              width: '300px',
+              height: 'auto',
+              filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.5))'
+            }}
+          />
+        </div>
+      )}
+
+      {/* Bad Work Pop-up */}
+      {showBadWork && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 100,
+          animation: 'badWorkShake 2s ease-out',
+          pointerEvents: 'none'
+        }}>
+          <img 
+            src="/badWork.png" 
+            alt="Try Again!"
+            onError={(e) => {
+              console.error('Failed to load badWork.png');
+              e.target.style.display = 'none';
+            }}
             style={{
               width: '300px',
               height: 'auto',
@@ -125,6 +164,40 @@ export function QuizCard({ content, isActive, onDoubleTap }) {
           30% {
             transform: translate(-50%, -50%) scale(1.05) rotate(0deg);
             opacity: 1;
+          }
+          85% {
+            transform: translate(-50%, -50%) scale(1) rotate(0deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(0.8) rotate(0deg);
+            opacity: 0;
+          }
+        }
+
+        @keyframes badWorkShake {
+          0% {
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+          }
+          10% {
+            transform: translate(-50%, -50%) scale(1.1) rotate(0deg);
+            opacity: 1;
+          }
+          15% {
+            transform: translate(-50%, -50%) scale(1) rotate(-5deg);
+          }
+          20% {
+            transform: translate(-50%, -50%) scale(1) rotate(5deg);
+          }
+          25% {
+            transform: translate(-50%, -50%) scale(1) rotate(-5deg);
+          }
+          30% {
+            transform: translate(-50%, -50%) scale(1) rotate(5deg);
+          }
+          35% {
+            transform: translate(-50%, -50%) scale(1) rotate(0deg);
           }
           85% {
             transform: translate(-50%, -50%) scale(1) rotate(0deg);
