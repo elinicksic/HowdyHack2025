@@ -683,6 +683,7 @@ export default function VerticalScrollGallery() {
   };
 
   return (
+    <div className="home"> 
     <div style={{
       width: '100vw',
       height: '100vh',
@@ -897,6 +898,7 @@ export default function VerticalScrollGallery() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }
