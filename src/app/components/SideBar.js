@@ -6,6 +6,8 @@ import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
 import { SidebarData } from "./SideData";
 import React from "react";
+import ProgressBar from "./sidebarcomp/progressbar"
+
 
 export default function PopUp() {
   const [sidebar, setSidebar] = useState(true);
@@ -19,8 +21,6 @@ export default function PopUp() {
       document.body.classList.remove('sidebar-open');
     }
   }, [sidebar]);
-
-  var count = -1;
 
   return (
     <>
@@ -36,39 +36,37 @@ export default function PopUp() {
 
         {/* Floating Sidebar Items */}
         <nav className={sidebar ? "nav-menu active" : "nav-menu"}>
-          <ul className="nav-menu-items">
+        <ul className="nav-menu-items">
             {SidebarData.map((item, index) => {
-              count = count + 1;
-
-              if(count %3 == 0){
-              return (
+            return (
                 <li key={index} className="nav-item">
-                  <Link href={item.path} onClick={showSidebar}>
-                    
-                    <div className="nav-card">
-                      <div className="nav-icon">
-                        {item.icon}
-                      </div>
-                      <span className="nav-title">{item.title}</span>
-                    </div>
-                  </Link>
+                        <div className="cool-top">
+                            <span className="nav-title">{item.title}</span>
+                            <div className="nav-icon">
+                                    {item.icon}
+                            </div>
+                        </div>
+                        <div className="nav-card">
+                            
+                            {/* Use a DIV instead of UL to wrap the inner links */}
+                            {item.categories && item.categories.length > 0 && (
+                                <div className="nav-subcategories-group"> 
+                                    {item.categories.map((item1, index1) => (
+                                        <div key={index1} className="nav-part-item"> {/* Use DIV or SPAN instead of LI */}
+                                            <Link href={item1.path} onClick={showSidebar}>
+                                                <span className="nav-title-sub">{item1.title}</span>
+                                            </Link>
+                                            <ProgressBar progress={item1.progress}/>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            
+                        </div>
                 </li>
-              );}else{
-                return(
-                <li key={index} className="nav-item">
-                  <Link href={item.path} onClick={showSidebar}>
-                    
-                    <div className="nav-card-min">
-                      <div className="nav-icon">
-                        {item.icon}
-                      </div>
-                      <span className="nav-title">{item.title}</span>
-                    </div>
-                  </Link>
-                </li>);
-              }
+            );
             })}
-          </ul>
+        </ul>
         </nav>
       </IconContext.Provider>
 
@@ -81,7 +79,30 @@ export default function PopUp() {
           z-index: 1001;
           pointer-events: auto;
         }
+        .cool-top{
+        display: flex;
+            align-items: center;
+            justify-content: center;
 
+            /* p-4 sm:p-6 */
+            padding: 1rem; /* p-4 */
+
+            /* space-x-3 sm:space-x-4 */
+            /* We use padding right on the icon and padding left on the text for consistent spacing */
+            /* A common way to handle space-x is margin, but here we'll use gap or margin to the right on the icon */
+
+            /* bg-gray-800 */
+            background-color: #1f2937;
+
+            /* border-t-4 border-t-indigo-500 */
+            border-top: 4px solid #6366f1;
+
+            /* rounded-t-2xl rounded-b-lg */
+            border-top-left-radius: 1rem;    /* rounded-t-2xl */
+            border-top-right-radius: 1rem;   /* rounded-t-2xl */
+            border-bottom-left-radius: 0.5rem; /* rounded-b-lg */
+            border-bottom-right-radius: 0.5rem; /* rounded-b-lg */
+        }
         .menu-toggle-btn {
           background: rgba(139, 123, 209, 0.25);
           backdrop-filter: blur(20px) saturate(180%);
@@ -165,7 +186,7 @@ export default function PopUp() {
           -webkit-backdrop-filter: blur(20px) saturate(180%);
           border: 1px solid rgba(255, 255, 255, 0.15);
           border-radius: 24px;
-          padding: 24px 32px;
+          padding: 100px 32px;
           display: flex;
           align-items: center;
           gap: 20px;
@@ -240,6 +261,14 @@ export default function PopUp() {
           font-weight: 600;
           letter-spacing: 0.5px;
           text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        .nav-title-sub {
+          color: rgba(255, 255, 255, 0.95);
+          font-size: 1.25rem;
+          font-weight: 600;
+          letter-spacing: 0.5px;
+          text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+          margin-top: 100px;
         }
 
         /* Prevent body scroll */
