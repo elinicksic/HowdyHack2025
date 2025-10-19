@@ -23,7 +23,7 @@ export default function HomePage() {
   ];
 
   const suggestedTopics = [
-    "Ancient Rome",
+    "ENGR 102",
     "Climate Change",
     "Machine Learning",
     "Black Holes",
