@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Heart, MessageCircle, Share2, Bookmark, X, Send } from 'lucide-react';
 import { reelsContent } from './data/reelsContent';
+import PopUp from "./components/SideBar"
 import { 
   QuizCard, 
   ImageCard, 
