@@ -63,6 +63,75 @@ export default function PopUp() {
       </IconContext.Provider>
 
       <style jsx global>{`
+        /* Floating Menu Button */
+        .floating-menu-button {
+          position: fixed;
+          top: 20px;
+          left: 20px;
+          z-index: 1001;
+          pointer-events: auto;
+        }
+          
+        @media screen and (max-width: 1200px) {
+          .nav-menu,
+          .nav-menu.active,
+          .floating-menu-button {
+            display: none !important;
+            pointer-events: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+          }
+        }
+
+        .cool-top{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            /* p-4 sm:p-6 */
+            padding: 1rem; /* p-4 */
+
+            /* space-x-3 sm:space-x-4 */
+            /* We use padding right on the icon and padding left on the text for consistent spacing */
+            /* A common way to handle space-x is margin, but here we'll use gap or margin to the right on the icon */
+
+            /* bg-gray-800 */
+            background-color: #1f2937;
+
+            /* border-t-4 border-t-indigo-500 */
+            border-top: 4px solid #6366f1;
+
+            /* rounded-t-2xl rounded-b-lg */
+            border-top-left-radius: 1rem;    /* rounded-t-2xl */
+            border-top-right-radius: 1rem;   /* rounded-t-2xl */
+            border-bottom-left-radius: 0.5rem; /* rounded-b-lg */
+            border-bottom-right-radius: 0.5rem; /* rounded-b-lg */
+        }
+        .menu-toggle-btn {
+          background: rgba(139, 123, 209, 0.25);
+          backdrop-filter: blur(20px) saturate(180%);
+          -webkit-backdrop-filter: blur(20px) saturate(180%);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          border-radius: 16px;
+          padding: 16px 20px;
+          color: #ffffff;
+          font-size: 1.5rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .menu-toggle-btn:hover {
+          background: rgba(139, 123, 209, 0.35);
+          transform: scale(1.05);
+          box-shadow: 0 8px 32px 0 rgba(139, 123, 209, 0.4);
+        }
+
+        /* Overlay removed - background is now fully interactive */
+
         /* Floating Sidebar */
         .nav-menu {
           position: fixed;

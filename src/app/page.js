@@ -7,13 +7,13 @@ import VerticalScrollFeed from './components/reel_view/VerticalScrollView';
 export default function HomePage() {
   const topics = [
     "Principles of Rocketry",
-    "Quantum Mechanics",
-    "Topology",
+    "Principles of Rocketry",
+    "Principles of Rocketry",
   ];
 
   const suggestedTopics = [
     {title: "Python Basics", feed_id: "1fa3a63b-d95c-47c7-b707-2dda8fc8e0d7"},
-    {title: "Common Polyatomic-Ions", feed_id: "398e258b-1421-4b93-9778-f8f64ff04a8c"}
+    {title: "Common Polyatomic-Ions", feed_id: "0bbd8e01-6717-4d56-b4a8-a1053e1dfc43"}
   ];
 
   const [currentTopicIndex, setCurrentTopicIndex] = useState(0);
@@ -29,6 +29,15 @@ export default function HomePage() {
   const lineRef = useRef(null);
   const buttonRef = useRef(null);
   const inputRef = useRef(null);
+//   const [isWide, setIsWide] = useState(false);
+
+//  useEffect(() => {
+//    // adjust breakpoint here (768 = md, 1024 = lg)
+//    const updateIsWide = () => setIsWide(window.outerWidth >= 1024);
+//    updateIsWide();
+//    window.addEventListener('resize', updateIsWide);
+//    return () => window.removeEventListener('resize', updateIsWide);
+//   }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -91,7 +100,7 @@ export default function HomePage() {
       setIsTransitioning(true);
       setCurrentFeedId(feed_id);
 
-      const res = await fetch(`http://127.0.0.1:5000/studysets/get?username=eli&id=${encodeURIComponent(feed_id)}`, {
+      const res = await fetch(`http://127.0.1:5000/studysets/get?username=eli&id=${encodeURIComponent(feed_id)}`, {
         method: 'GET',
         headers: { Accept: 'application/json' },
       });
@@ -141,7 +150,9 @@ export default function HomePage() {
         <Button style={{position: 'absolute', top: 20, left: 20, zIndex: 50}} variant="contained" href="/">
           Back to Home
         </Button>
-        <PopUp />
+
+        {/* {isWide && <PopUp />} */}
+        <PopUp/>
         <div className="flex h-full">
 
           <main className="flex-1 relative">
