@@ -89,12 +89,13 @@ a {
   left: 0;
   border-top-right-radius: 40px;
   border-bottom-right-radius: 40px;
-  background-color: gray;
+  background-color: white;
   width: 300px;
   z-index: 999;
 }
 
 .menu-bars {
+  padding-bottom: 700px;
   margin-left: 2rem;
   font-size: 2rem;
   background: none;
@@ -168,4 +169,8 @@ span {
   display: flex; /* Makes the container a flex container */
   flex-direction: column; /* Stacks items vertically */
   gap: 10px; /* Adds space between flex items */
+}
+
+.MainBlob{
+  display: 
 }

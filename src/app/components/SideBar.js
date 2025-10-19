@@ -5,6 +5,8 @@ import Link from "next/link";
 import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
 import {SidebarData} from "./SideData"
+import MainBar from "./sidebarcomp/MainBar"
+import SubBar from "./sidebarcomp/SubBar"
 
 export default function PopUp() {
     const [sidebar, setSidebar] = useState(false)
@@ -14,6 +16,8 @@ export default function PopUp() {
     return(
         <>
       <IconContext.Provider value={{ color: "undefined" }}>
+        <MainBar/>
+        <SubBar/>
         <div className="navbar">
           <Link href="/" className="menu-bars">
             <FaIcons.FaBars onClick={showSidebar} />
