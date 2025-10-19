@@ -25,7 +25,7 @@ export default function HomePage() {
 
   const suggestedTopics = [
     {title: "Python Basics", feed_id: "1fa3a63b-d95c-47c7-b707-2dda8fc8e0d7"},
-    {title: "Common Polyatomic-Ions", feed_id: "0bbd8e01-6717-4d56-b4a8-a1053e1dfc43"}
+    {title: "Common Polyatomic-Ions", feed_id: "398e258b-1421-4b93-9778-f8f64ff04a8c"}
   ];
 
   const [currentTopicIndex, setCurrentTopicIndex] = useState(0);

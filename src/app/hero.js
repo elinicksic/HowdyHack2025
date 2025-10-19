@@ -681,7 +681,7 @@ const Reel = ({ content, isActive, setStopScroll }) => {
             border: '2px solid white',
             boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
           }}>
-            {content.emoji}
+            {content.author_pfp_emoji}
           </div>
           <span style={{ 
             color: 'white', 
@@ -689,7 +689,7 @@ const Reel = ({ content, isActive, setStopScroll }) => {
             fontSize: '13px',
             textShadow: '0 2px 4px rgba(0,0,0,0.7)'
           }}>
-            @studyscroll
+            @{content.author}
           </span>
           <button style={{
             background: 'none',
@@ -712,7 +712,7 @@ const Reel = ({ content, isActive, setStopScroll }) => {
           lineHeight: '1.3',
           textShadow: '0 2px 4px rgba(0,0,0,0.7)'
         }}>
-          <span style={{ fontWeight: 'bold' }}>StudyScroll</span> {content.title || content.question?.substring(0, 50) + '...'}
+          <span style={{ fontWeight: 'bold' }}>{content.author}</span> {content.title}
         </p>
       </div>
 
