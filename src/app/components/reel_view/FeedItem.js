@@ -38,7 +38,7 @@ const FeedItem = ({ content, isActive, setStopScroll }) => {
       case 'image':
         return <ImageCard content={content} isActive={isActive} onDoubleTap={handleDoubleTap} />;
       case 'reel':
-        return <VideoCard content={content} onDoubleTap={handleDoubleTap} />;
+        return <VideoCard content={content} onDoubleTap={handleDoubleTap} isVisible={isActive}/>;
       case 'post':
         return <PostCard content={content} onDoubleTap={handleDoubleTap} />;
       case 'poll':
