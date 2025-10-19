@@ -82,7 +82,7 @@ export function QuizCard({ content, isActive, onDoubleTap }) {
       </div>
       {showResult && (
         <p style={{ marginTop: '24px', fontSize: '18px', color: 'white', fontWeight: 'bold' }}>
-          {selectedAnswer === content.correct_idx ? '✅ Correct!' : '❌ Try again!'}
+          {selectedAnswer === content.correct_idx ? '✅ Correct!' : '❌ Incorrect!'}
         </p>
       )}
 

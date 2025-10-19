@@ -1,20 +1,8 @@
 "use client"
-// export default function Page() {
-//   return(
-//     <>
-//     <div className="container1">
-//         <div style={{position: 'relative'}}>
-//         <PopUp/>
-//         <Home/>
-//         </div>
-//       </div>
-//     </>
-//   )
-// }
-import Hero from './hero'
 import { useState, useEffect, useRef } from 'react';
-import PopUp from "./components/SideBar";
+import PopUp from "./components/sidebar/SideBar";
 import Button from "@mui/material/Button";
+import VerticalScrollFeed from './components/reel_view/VerticalScrollView';
 
 export default function HomePage() {
   const topics = [
@@ -25,7 +13,7 @@ export default function HomePage() {
 
   const suggestedTopics = [
     {title: "Python Basics", feed_id: "1fa3a63b-d95c-47c7-b707-2dda8fc8e0d7"},
-    {title: "Common Polyatomic-Ions", feed_id: "0bbd8e01-6717-4d56-b4a8-a1053e1dfc43"}
+    {title: "Common Polyatomic-Ions", feed_id: "398e258b-1421-4b93-9778-f8f64ff04a8c"}
   ];
 
   const [currentTopicIndex, setCurrentTopicIndex] = useState(0);
@@ -149,29 +137,31 @@ export default function HomePage() {
   if (showHero) {
     return (
       
-      <div className="h-screen w-screen">
+      <div className="relative h-screen w-screen">
         <Button style={{position: 'absolute', top: 20, left: 20, zIndex: 50}} variant="contained" href="/">
           Back to Home
         </Button>
         <PopUp />
         <div className="flex h-full">
 
-          <main className="flex-1 ">
+          <main className="flex-1 relative">
             <div style={{
               animation: 'fadeIn 0.5s ease-in-out',
-              height: '100vh',
-              width: '100vw',
-              paddingLeft: 'calc(100vw - 1000px)',
-            }}>
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)'
+              
+              }}>
               <style>
                 {`
                   @keyframes fadeIn {
-                    from { opacity: 0; transform: scale(0.95); }
-                    to { opacity: 1; transform: scale(1); }
+                    from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+                    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
                   }
                 `}
               </style>
-              <Hero onBack={handleBackToHome} content={feedData} searchQuery={inputValue} />    
+              <VerticalScrollFeed onBack={handleBackToHome} content={feedData} searchQuery={inputValue} />    
             </div>
           </main>
         </div>      

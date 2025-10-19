@@ -6,7 +6,7 @@ import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
 import { SidebarData } from "./SideData";
 import React from "react";
-import ProgressBar from "./sidebarcomp/progressbar"
+import ProgressBar from "./progressbar"
 
 
 export default function PopUp() {
