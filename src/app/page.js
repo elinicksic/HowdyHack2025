@@ -11,8 +11,9 @@
 //     </>
 //   )
 // }
+import Hero from './hero'
 import { useState, useEffect, useRef } from 'react';
-import Hero from './hero';
+import PopUp from "./components/SideBar";
 
 export default function HomePage() {
   const topics = [
@@ -134,7 +135,7 @@ export default function HomePage() {
             }
           `}
         </style>
-        <Hero onBack={handleBackToHome} searchQuery={inputValue} />
+        <Hero onBack={handleBackToHome} searchQuery={inputValue} />    
       </div>
     );
   }
@@ -263,7 +264,7 @@ export default function HomePage() {
           animation: fadeOut 0.3s ease-out forwards;
         }
       `}</style>
-
+      
       <div className={`min-h-screen flex items-center justify-center p-4 relative overflow-hidden ${isTransitioning ? 'transitioning' : ''}`}>
         <div className="absolute inset-0 z-0 opacity-80 pointer-events-none"></div>
         <div className="absolute top-10 left-0 w-[600px] h-[600px] rounded-full filter blur-3xl opacity-60 animate-blob blob-gradient"></div>

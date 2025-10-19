@@ -4,6 +4,7 @@ import { Heart, MessageCircle, Share2, Bookmark, X, Send } from 'lucide-react';
 import React from "react";
 import PopUp from "./components/SideBar";
 
+
 // Sample comments data
 const generateComments = () => [
   { id: 1, user: 'sarah_learns', avatar: '👩‍🎓', text: 'This is so helpful! Thanks for sharing!', likes: 234, time: '2h ago' },
@@ -99,6 +100,7 @@ const QuizCard = ({ content, isActive, onDoubleTap }) => {
 // Regular Content Card Component
 const ContentCard = ({ content, onDoubleTap }) => {
   return (
+    
     <div 
       onDoubleClick={onDoubleTap}
       style={{
@@ -685,7 +687,10 @@ export default function VerticalScrollGallery() {
   };
 
   return (
+    <>
+    
     <div className="home"> 
+      
     <div style={{
       width: '100vw',
       height: '100vh',
@@ -695,56 +700,9 @@ export default function VerticalScrollGallery() {
       backgroundColor: '#0a0a0a',
       position: 'relative',
       overflow: 'hidden',
-      padding: '40px 20px'
+      padding: '20px' // Changed from '40px 20px'
     }}>
-      <style jsx global>{`
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
-        body {
-          overflow: hidden;
-          background: #0a0a0a;
-        }
-        @keyframes blob {
-          0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
-          33% { transform: translate(40px, -60px) scale(1.2) rotate(120deg); }
-          66% { transform: translate(-30px, 30px) scale(0.85) rotate(240deg); }
-          100% { transform: translate(0px, 0px) scale(1) rotate(360deg); }
-        }
-        @keyframes blob2 {
-          0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
-          33% { transform: translate(-50px, 40px) scale(1.1) rotate(-120deg); }
-          66% { transform: translate(60px, -40px) scale(0.9) rotate(-240deg); }
-          100% { transform: translate(0px, 0px) scale(1) rotate(-360deg); }
-        }
-        @keyframes blob3 {
-          0% { transform: translate(0px, 0px) scale(1); }
-          33% { transform: translate(30px, 50px) scale(1.25); }
-          66% { transform: translate(-40px, -30px) scale(0.8); }
-          100% { transform: translate(0px, 0px) scale(1); }
-        }
-        @keyframes blob4 {
-          0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
-          33% { transform: translate(-35px, -45px) scale(1.15) rotate(90deg); }
-          66% { transform: translate(45px, 35px) scale(0.95) rotate(180deg); }
-          100% { transform: translate(0px, 0px) scale(1) rotate(270deg); }
-        }
-        @keyframes blob5 {
-          0% { transform: translate(0px, 0px) scale(1); }
-          33% { transform: translate(55px, -35px) scale(1.3); }
-          66% { transform: translate(-25px, 45px) scale(0.75); }
-          100% { transform: translate(0px, 0px) scale(1); }
-        }
-        @keyframes blob6 {
-          0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
-          33% { transform: translate(-45px, 55px) scale(1.05) rotate(-90deg); }
-          66% { transform: translate(35px, -25px) scale(1.2) rotate(-180deg); }
-          100% { transform: translate(0px, 0px) scale(1) rotate(-270deg); }
-        }
-      `}</style>
-
+       <PopUp/>
       {/* MANY MORE Floating Gradient Blobs with Higher Opacity */}
       <div style={{
         position: 'absolute',
@@ -758,7 +716,7 @@ export default function VerticalScrollGallery() {
         animation: 'blob 10s ease-in-out infinite',
         pointerEvents: 'none'
       }} />
-
+      
       <div style={{
         position: 'absolute',
         top: '45%',
@@ -826,14 +784,15 @@ export default function VerticalScrollGallery() {
 
       {/* Thicker Glassmorphic Wrapper with Enhanced Warping Effect */}
       <div style={{
-        position: 'relative',
-        width: 'min(calc((100vh - 80px) * 9 / 16), calc(100vw - 40px))',
-        height: 'calc(100vh - 80px)',
-        borderRadius: '36px',
-        padding: '6px',
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.25) 100%)',
-        boxShadow: '0 0 100px rgba(0, 0, 0, 0.6), inset 0 0 60px rgba(255, 255, 255, 0.08)',
+          position: 'relative',
+          width: 'min(calc((100vh - 40px) * 9 / 16), calc(100vw - 40px))', // Changed from 80px to 40px
+          height: 'calc(100vh - 40px)', // Changed from 80px to 40px
+          borderRadius: '36px',
+          padding: '6px',
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.25) 100%)',
+          boxShadow: '0 0 100px rgba(0, 0, 0, 0.6), inset 0 0 60px rgba(255, 255, 255, 0.08)',
       }}>
+        
         {/* Inner Glass Border with Strong Backdrop Filter */}
         <div style={{
           position: 'absolute',
@@ -902,5 +861,6 @@ export default function VerticalScrollGallery() {
       </div>
     </div>
     </div>
+    </>
   );
 }
