@@ -17,16 +17,16 @@ export function ListCard({ content, onDoubleTap }) {
       }}
     >
       <div style={{ fontSize: '64px', marginBottom: '20px' }}>{content.emoji}</div>
-      <h2 style={{ fontSize: '26px', fontWeight: 'bold', color: 'white', marginBottom: '30px', textAlign: 'center', maxWidth: '90%' }}>
+      <h2 style={{ fontSize: '26px', fontWeight: 'bold', color: 'white', marginBottom: '30px', textAlign: 'center', maxWidth: '85%' }}>
         {content.title}
       </h2>
-      <div style={{ width: '100%', maxWidth: '350px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div style={{ width: '100%', maxWidth: '280px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {content.items.map((item, index) => (
           <div
             key={index}
             style={{
-              padding: '16px 20px',
-              fontSize: '15px',
+              padding: '14px 18px',
+              fontSize: '14px',
               fontWeight: '500',
               color: 'white',
               background: 'rgba(255, 255, 255, 0.2)',
@@ -35,18 +35,18 @@ export function ListCard({ content, onDoubleTap }) {
               backdropFilter: 'blur(10px)',
               display: 'flex',
               alignItems: 'center',
-              gap: '12px'
+              gap: '10px'
             }}
           >
             <span style={{ 
-              width: '28px', 
-              height: '28px', 
+              width: '26px', 
+              height: '26px', 
               borderRadius: '50%', 
               background: 'rgba(255,255,255,0.3)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '14px',
+              fontSize: '13px',
               fontWeight: 'bold',
               flexShrink: 0
             }}>
