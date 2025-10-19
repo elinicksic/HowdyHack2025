@@ -1,8 +1,17 @@
-"use client"
+"use client";
 import { useState, useEffect, useRef } from 'react';
 import { Heart, MessageCircle, Share2, Bookmark, X, Send } from 'lucide-react';
-import React from "react";
-import PopUp from "./components/SideBar";
+import { reelsContent } from './data/reelsContent';
+import { 
+  QuizCard, 
+  ImageCard, 
+  VideoCard, 
+  TextCard, 
+  PollCard, 
+  FlashCard, 
+  ListCard 
+} from './components/ReelTypes';
+
 
 
 // Sample comments data
@@ -16,122 +25,6 @@ const generateComments = () => [
   { id: 7, user: 'sophia_code', avatar: '👩‍💻', text: 'Mind blown 🤯', likes: 201, time: '2d ago' },
   { id: 8, user: 'david_learn', avatar: '🧑‍🎓', text: 'Can you explain this in more detail?', likes: 45, time: '2d ago' },
 ];
-
-// Quiz Card Component
-const QuizCard = ({ content, isActive, onDoubleTap }) => {
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [showResult, setShowResult] = useState(false);
-
-  const handleAnswer = (index) => {
-    setSelectedAnswer(index);
-    setShowResult(true);
-  };
-
-  useEffect(() => {
-    if (!isActive) {
-      setSelectedAnswer(null);
-      setShowResult(false);
-    }
-  }, [isActive]);
-
-  return (
-    <div 
-      onDoubleClick={onDoubleTap}
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '30px 20px',
-        background: content.background,
-        cursor: 'pointer'
-      }}
-    >
-      <div style={{ fontSize: '64px', marginBottom: '20px' }}>{content.emoji}</div>
-      <h2 style={{ fontSize: '22px', fontWeight: 'bold', color: 'white', marginBottom: '30px', textAlign: 'center', maxWidth: '90%' }}>
-        {content.question}
-      </h2>
-      <div style={{ width: '100%', maxWidth: '320px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {content.options.map((option, index) => {
-          const isCorrect = index === content.correctAnswer;
-          const isSelected = index === selectedAnswer;
-          let bgColor = 'rgba(255, 255, 255, 0.2)';
-          
-          if (showResult && isSelected) {
-            bgColor = isCorrect ? 'rgba(34, 197, 94, 0.6)' : 'rgba(239, 68, 68, 0.6)';
-          } else if (showResult && isCorrect) {
-            bgColor = 'rgba(34, 197, 94, 0.6)';
-          }
-
-          return (
-            <button
-              key={index}
-              onClick={() => !showResult && handleAnswer(index)}
-              disabled={showResult}
-              style={{
-                padding: '16px',
-                fontSize: '15px',
-                fontWeight: '600',
-                color: 'white',
-                background: bgColor,
-                border: '2px solid rgba(255, 255, 255, 0.3)',
-                borderRadius: '12px',
-                cursor: showResult ? 'default' : 'pointer',
-                transition: 'all 0.3s ease',
-                backdropFilter: 'blur(10px)'
-              }}
-            >
-              {option}
-            </button>
-          );
-        })}
-      </div>
-      {showResult && (
-        <p style={{ marginTop: '24px', fontSize: '18px', color: 'white', fontWeight: 'bold' }}>
-          {selectedAnswer === content.correctAnswer ? '✅ Correct!' : '❌ Try again!'}
-        </p>
-      )}
-    </div>
-  );
-};
-
-// Regular Content Card Component
-const ContentCard = ({ content, onDoubleTap }) => {
-  return (
-    
-    <div 
-      onDoubleClick={onDoubleTap}
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '30px 20px',
-        background: content.background,
-        cursor: 'pointer'
-      }}
-    >
-      <div style={{ fontSize: '96px', marginBottom: '24px' }}>{content.emoji}</div>
-      <h2 style={{ fontSize: '28px', fontWeight: 'bold', color: 'white', marginBottom: '16px', textAlign: 'center', maxWidth: '90%' }}>
-        {content.title}
-      </h2>
-      {content.description && (
-        <p style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.9)', textAlign: 'center', maxWidth: '85%', lineHeight: '1.5' }}>
-          {content.description}
-        </p>
-      )}
-      {content.content && (
-        <p style={{ fontSize: '18px', color: 'white', textAlign: 'center', maxWidth: '85%', lineHeight: '1.6', fontWeight: '500' }}>
-          {content.content}
-        </p>
-      )}
-    </div>
-  );
-};
 
 // Comments Sheet Component
 const CommentsSheet = ({ isOpen, onClose, content }) => {
@@ -190,7 +83,8 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
         zIndex: 1000,
         display: 'flex',
         flexDirection: 'column',
-        animation: 'slideUp 0.3s ease'
+        animation: 'slideUp 0.3s ease',
+        overflow: 'hidden'
       }}>
         <style jsx>{`
           @keyframes slideUp {
@@ -282,11 +176,13 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
         </div>
 
         <div style={{
-          padding: '12px 16px',
+          padding: '16px 20px 20px 20px',
           borderTop: '1px solid rgba(255, 255, 255, 0.1)',
           display: 'flex',
           gap: '10px',
-          alignItems: 'center'
+          alignItems: 'center',
+          background: '#1a1a1a',
+          borderRadius: '0 0 24px 24px'
         }}>
           <input
             type="text"
@@ -298,8 +194,8 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
               flex: 1,
               background: 'rgba(255, 255, 255, 0.1)',
               border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: '20px',
-              padding: '10px 16px',
+              borderRadius: '24px',
+              padding: '12px 18px',
               color: 'white',
               fontSize: '13px',
               outline: 'none'
@@ -312,13 +208,14 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
               background: newComment.trim() ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'rgba(255, 255, 255, 0.1)',
               border: 'none',
               borderRadius: '50%',
-              width: '38px',
-              height: '38px',
+              width: '42px',
+              height: '42px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: newComment.trim() ? 'pointer' : 'not-allowed',
-              transition: 'all 0.3s'
+              transition: 'all 0.3s',
+              flexShrink: 0
             }}
           >
             <Send size={18} color="white" />
@@ -352,6 +249,28 @@ const Reel = ({ content, isActive }) => {
     }
   };
 
+  // Render different content types
+  const renderContent = () => {
+    switch (content.type) {
+      case 'quiz':
+        return <QuizCard content={content} isActive={isActive} onDoubleTap={handleDoubleTap} />;
+      case 'image':
+        return <ImageCard content={content} onDoubleTap={handleDoubleTap} />;
+      case 'video':
+        return <VideoCard content={content} onDoubleTap={handleDoubleTap} />;
+      case 'text':
+        return <TextCard content={content} onDoubleTap={handleDoubleTap} />;
+      case 'poll':
+        return <PollCard content={content} onDoubleTap={handleDoubleTap} />;
+      case 'flashcard':
+        return <FlashCard content={content} onDoubleTap={handleDoubleTap} />;
+      case 'list':
+        return <ListCard content={content} onDoubleTap={handleDoubleTap} />;
+      default:
+        return <TextCard content={content} onDoubleTap={handleDoubleTap} />;
+    }
+  };
+
   return (
     <div style={{
       position: 'relative',
@@ -360,12 +279,10 @@ const Reel = ({ content, isActive }) => {
       scrollSnapAlign: 'start',
       overflow: 'hidden'
     }}>
-      {content.type === 'quiz' ? (
-        <QuizCard content={content} isActive={isActive} onDoubleTap={handleDoubleTap} />
-      ) : (
-        <ContentCard content={content} onDoubleTap={handleDoubleTap} />
-      )}
+      {/* Render Content Based on Type */}
+      {renderContent()}
 
+      {/* Double Tap Heart Animation */}
       {showHeartAnimation && (
         <div style={{
           position: 'absolute',
@@ -405,89 +322,120 @@ const Reel = ({ content, isActive }) => {
         }
       `}</style>
 
-      <div style={{
-        position: 'absolute',
-        right: '12px',
-        bottom: '100px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '16px',
-        zIndex: 10
-      }}>
-        {content.likes && (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <button
-              onClick={handleLikeClick}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '6px',
-                transition: 'transform 0.2s'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-            >
-              <Heart size={28} color={liked ? '#ff4458' : 'white'} fill={liked ? '#ff4458' : 'none'} strokeWidth={2.5} />
-            </button>
-            <span style={{ color: 'white', fontSize: '11px', fontWeight: 'bold', marginTop: '2px' }}>
-              {(content.likes + (liked ? 1 : 0)).toLocaleString()}
-            </span>
-          </div>
-        )}
+          {/* Right Side Action Buttons */}
+    <div style={{
+      position: 'absolute',
+      right: '12px',
+      bottom: '100px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '16px',
+      zIndex: 10
+    }}>
+      {content.likes !== undefined && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <button
+            onClick={handleLikeClick}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '6px',
+              transition: 'transform 0.2s',
+              opacity: 0.85
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.1)';
+              e.currentTarget.style.opacity = '1';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.opacity = '0.85';
+            }}
+          >
+            <Heart size={24} color={liked ? '#ff4458' : 'white'} fill={liked ? '#ff4458' : 'none'} strokeWidth={2.5} />
+          </button>
+          <span style={{ color: 'white', fontSize: '11px', fontWeight: 'bold', marginTop: '2px', opacity: 0.85 }}>
+            {(content.likes + (liked ? 1 : 0)).toLocaleString()}
+          </span>
+        </div>
+      )}
 
-        {content.comments && (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <button
-              onClick={() => setShowComments(true)}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '6px',
-                transition: 'transform 0.2s'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-            >
-              <MessageCircle size={28} color="white" strokeWidth={2.5} />
-            </button>
-            <span style={{ color: 'white', fontSize: '11px', fontWeight: 'bold', marginTop: '2px' }}>
-              {content.comments}
-            </span>
-          </div>
-        )}
+      {content.comments !== undefined && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <button
+            onClick={() => setShowComments(true)}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '6px',
+              transition: 'transform 0.2s',
+              opacity: 0.85
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.1)';
+              e.currentTarget.style.opacity = '1';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.opacity = '0.85';
+            }}
+          >
+            <MessageCircle size={24} color="white" strokeWidth={2.5} />
+          </button>
+          <span style={{ color: 'white', fontSize: '11px', fontWeight: 'bold', marginTop: '2px', opacity: 0.85 }}>
+            {content.comments}
+          </span>
+        </div>
+      )}
 
-        <button
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '6px',
-            transition: 'transform 0.2s'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-        >
-          <Share2 size={26} color="white" strokeWidth={2.5} />
-        </button>
+      <button
+        style={{
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          padding: '6px',
+          transition: 'transform 0.2s',
+          opacity: 0.85
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.1)';
+          e.currentTarget.style.opacity = '1';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.opacity = '0.85';
+        }}
+      >
+        <Share2 size={22} color="white" strokeWidth={2.5} />
+      </button>
 
-        <button
-          onClick={() => setBookmarked(!bookmarked)}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '6px',
-            transition: 'transform 0.2s'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-        >
-          <Bookmark size={26} color="white" fill={bookmarked ? 'white' : 'none'} strokeWidth={2.5} />
-        </button>
-      </div>
+      <button
+        onClick={() => setBookmarked(!bookmarked)}
+        style={{
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          padding: '6px',
+          transition: 'transform 0.2s',
+          opacity: 0.85
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.1)';
+          e.currentTarget.style.opacity = '1';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.opacity = '0.85';
+        }}
+      >
+        <Bookmark size={22} color="white" fill={bookmarked ? 'white' : 'none'} strokeWidth={2.5} />
+      </button>
+    </div>
 
+
+      {/* Bottom Info */}
       <div style={{
         position: 'absolute',
         bottom: '16px',
@@ -530,6 +478,7 @@ const Reel = ({ content, isActive }) => {
         </p>
       </div>
 
+      {/* Type Indicator */}
       <div style={{
         position: 'absolute',
         top: '16px',
@@ -542,9 +491,15 @@ const Reel = ({ content, isActive }) => {
         fontSize: '11px',
         fontWeight: 'bold'
       }}>
-        {content.type === 'quiz' ? '🧠 Quiz' : content.type === 'video' ? '🎥 Video' : '📖 Lesson'}
+        {content.type === 'quiz' ? '🧠 Quiz' : 
+         content.type === 'video' ? '🎥 Video' : 
+         content.type === 'poll' ? '📊 Poll' :
+         content.type === 'flashcard' ? '🔄 Flashcard' :
+         content.type === 'list' ? '📋 List' :
+         '📖 Lesson'}
       </div>
 
+      {/* Comments Sheet */}
       <CommentsSheet
         isOpen={showComments}
         onClose={() => setShowComments(false)}
@@ -557,48 +512,7 @@ const Reel = ({ content, isActive }) => {
 // Main App Component
 export default function VerticalScrollGallery() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [content] = useState([
-    {
-      id: 1,
-      type: 'image',
-      title: 'The Water Cycle',
-      description: 'Learn how water moves through Earth\'s atmosphere',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      emoji: '💧',
-      likes: 1234,
-      comments: 56
-    },
-    {
-      id: 2,
-      type: 'quiz',
-      question: 'What is the powerhouse of the cell?',
-      options: ['Nucleus', 'Mitochondria', 'Ribosome', 'Chloroplast'],
-      correctAnswer: 1,
-      background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-      emoji: '🧬',
-      comments: 42
-    },
-    {
-      id: 3,
-      type: 'video',
-      title: 'Photosynthesis Explained',
-      description: 'How plants convert sunlight into energy',
-      background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-      emoji: '🌱',
-      likes: 2456,
-      comments: 89
-    },
-    {
-      id: 4,
-      type: 'text',
-      title: 'Newton\'s First Law',
-      content: 'An object at rest stays at rest, and an object in motion stays in motion unless acted upon by an external force.',
-      background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-      emoji: '⚛️',
-      likes: 3421,
-      comments: 134
-    }
-  ]);
+  const [content] = useState(reelsContent); // Using imported content
   const containerRef = useRef(null);
   const isScrollingRef = useRef(false);
 
@@ -782,32 +696,19 @@ export default function VerticalScrollGallery() {
         pointerEvents: 'none'
       }} />
 
-      {/* Thicker Glassmorphic Wrapper with Enhanced Warping Effect */}
+      {/* Translucent Glassmorphic Border Wrapper */}
       <div style={{
-          position: 'relative',
-          width: 'min(calc((100vh - 40px) * 9 / 16), calc(100vw - 40px))', // Changed from 80px to 40px
-          height: 'calc(100vh - 40px)', // Changed from 80px to 40px
-          borderRadius: '36px',
-          padding: '6px',
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.25) 100%)',
-          boxShadow: '0 0 100px rgba(0, 0, 0, 0.6), inset 0 0 60px rgba(255, 255, 255, 0.08)',
+        position: 'relative',
+        width: 'min(calc((100vh - 80px) * 9 / 16), calc(100vw - 40px))',
+        height: 'calc(100vh - 80px)',
+        borderRadius: '36px',
+        background: 'rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(40px) saturate(200%)',
+        border: '1px solid rgba(255, 255, 255, 0.18)',
+        boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 0 60px rgba(255, 255, 255, 0.05)',
+        padding: '8px',
       }}>
         
-        {/* Inner Glass Border with Strong Backdrop Filter */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          borderRadius: '36px',
-          padding: '3px',
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.15) 75%, rgba(255,255,255,0.35) 100%)',
-          WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-          WebkitMaskComposite: 'xor',
-          maskComposite: 'exclude',
-          backdropFilter: 'blur(50px) saturate(180%)',
-          pointerEvents: 'none',
-          zIndex: 2
-        }} />
-
         {/* Content Container */}
         <div
           ref={containerRef}
@@ -820,7 +721,7 @@ export default function VerticalScrollGallery() {
             scrollSnapType: 'y mandatory',
             backgroundColor: '#000',
             position: 'relative',
-            borderRadius: '30px',
+            borderRadius: '28px',
             zIndex: 1
           }}
         >
