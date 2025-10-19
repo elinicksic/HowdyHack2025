@@ -12,7 +12,7 @@ export default function HomePage() {
   ];
 
   const suggestedTopics = [
-    {title: "Python Basics", feed_id: "1fa3a63b-d95c-47c7-b707-2dda8fc8e0d7"},
+    {title: "Python Basics", feed_id: "91ebe048-5253-415d-8f18-f39e3a68241c"},
     {title: "Common Polyatomic-Ions", feed_id: "398e258b-1421-4b93-9778-f8f64ff04a8c"}
   ];
 
@@ -115,14 +115,63 @@ export default function HomePage() {
     }
   }
 
+  const loadNewGenerated = async () => {
+    try {
+      setLoading(true);
+      setIsTransitioning(true);
+      setFeedData(null);
+
+      const create_res = await fetch(`http://127.0.0.1:5000/studysets/create?username=eli`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: inputValue
+        }),
+      });
+      if (!create_res.ok) {
+        throw new Error(`Failed to create studyset: ${create_res.status} ${create_res.statusText}`);
+      }
+
+      const { id } = await create_res.json();
+      setCurrentFeedId(id);
+
+      const maxAttempts = 1000;
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const get_res = await fetch(
+          `http://127.0.0.1:5000/studysets/get?username=eli&id=${encodeURIComponent(id)}`,
+          { method: 'GET', headers: { Accept: 'application/json' }, cache: 'no-store' }
+        );
+        if (!get_res.ok) {
+          throw new Error(`Failed to load feed: ${get_res.status} ${get_res.statusText}`);
+        }
+
+        const data = await get_res.json();
+
+        if (data.status === 'ready') {
+          setFeedData(data);
+          setTimeout(() => setShowHero(true), 300);
+          return; // done
+        }
+        if (data.status === 'error') {
+          throw new Error(data.error || 'Generation failed');
+        }
+
+        // wait 1.5s before next poll
+        await new Promise((r) => setTimeout(r, 1500));
+      }
+
+      throw new Error('Timed out waiting for generation');
+    } catch (err) {
+      console.error('Error generating studyset', err);
+      setIsTransitioning(false);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    setIsTransitioning(true);
-    
-    // Smooth fade out animation
-    setTimeout(() => {
-      setShowHero(true);
-    }, 300);
+    loadNewGenerated();
   };
 
   const handleBackToHome = () => {
@@ -293,6 +342,13 @@ export default function HomePage() {
           animation: fadeOut 0.3s ease-out forwards;
         }
       `}</style>
+
+      {isLoading ? <h1 style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)'
+      }}>Generating Feed...</h1> : <></>}
       
       <div className={`min-h-screen flex items-center justify-center p-4 relative overflow-hidden ${isTransitioning ? 'transitioning' : ''}`}>
         

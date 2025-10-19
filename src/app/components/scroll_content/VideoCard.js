@@ -1,17 +1,41 @@
 "use client";
 import { useRef, useState, useEffect } from 'react';
 
-export function VideoCard({ content, onDoubleTap }) {
+export function VideoCard({ content, onDoubleTap, isVisible }) {
   const videoRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
 
   // Auto-play when card becomes active
   useEffect(() => {
-    if (videoRef.current && content.autoPlay) {
-      videoRef.current.play();
-      setIsPlaying(true);
+    const v = videoRef.current;
+    if (!v) return;
+
+    const onReady = async () => {
+      try {
+        v.muted = false; // ensure muted for autoplay policies
+        await v.play();
+        setIsPlaying(true);
+      } catch {
+        setIsPlaying(false); // autoplay blocked; overlay stays
+      }
+    };
+
+    if (isVisible) {
+      if (v.readyState >= 2) {
+        onReady();
+      } else {
+        v.addEventListener('canplay', onReady, { once: true });
+        v.addEventListener('loadeddata', onReady, { once: true });
+        return () => {
+          v.removeEventListener('canplay', onReady);
+          v.removeEventListener('loadeddata', onReady);
+        };
+      }
+    } else {
+      v.pause();
+      setIsPlaying(false);
     }
-  }, [content.autoPlay]);
+  }, [content.muted, isVisible]);
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -40,19 +64,17 @@ export function VideoCard({ content, onDoubleTap }) {
         position: 'relative'
       }}
     >
-      {content.videoUrl ? (
+      {content.video_file ? (
         <>
           <video
             ref={videoRef}
-            src={content.videoUrl}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover'
-            }}
+            src={"http://localhost:5000/videos/" + content.video_file}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             loop
             playsInline
+            autoPlay={content.autoPlay}
             muted={content.muted !== false}
+            preload="metadata"
           />
           
           {/* Play/Pause Indicator */}
