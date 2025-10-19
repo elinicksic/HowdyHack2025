@@ -1,3 +1,6 @@
+@import "tailwindcss";
+
+
 :root {
   --background: #ffffff;
   --foreground: linear-gradient(135deg, #3b82f6 0%, #a855f7 50%, #ec4899 100%);
@@ -41,21 +44,25 @@ a {
   }
 }
 
-.post-card {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid #dbdbdb;
-  margin-bottom: 1.5rem;
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
 }
-.post-card h4 {
-  background: #fafafa;
-  padding: 0.5rem;
+
+.animate-blob {
+  animation: blob 7s infinite;
 }
-.post-card img {
-  height: 300px;
-  width: 500px;
-  object-fit: cover;
+
+.animation-delay-2000 {
+  animation-delay: 2s;
 }
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
 
 
 * {
