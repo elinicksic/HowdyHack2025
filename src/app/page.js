@@ -1,5 +1,4 @@
-
-
+"use client"
 // export default function Page() {
 //   return(
 //     <>
@@ -12,7 +11,6 @@
 //     </>
 //   )
 // }
-
 import { useState, useEffect, useRef } from 'react';
 import Hero from './hero';
 
