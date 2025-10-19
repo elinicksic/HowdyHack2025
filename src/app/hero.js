@@ -53,7 +53,7 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
   };
 
   const fetchAiReply = async ({ commentText, conversation }) => {
-    const res = await fetch('http://localhost:5000/comments/response?username=eli', {
+    const res = await fetch('http://127.0.0.1:5000/comments/response?username=eli', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -906,6 +906,7 @@ export default function VerticalScrollGallery({ content }) {
         animation: 'blob3 16s ease-in-out infinite',
         pointerEvents: 'none'
       }} />
+      
 
       <div style={{
         position: 'absolute',

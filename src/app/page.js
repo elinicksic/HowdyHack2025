@@ -14,12 +14,13 @@
 import Hero from './hero'
 import { useState, useEffect, useRef } from 'react';
 import PopUp from "./components/SideBar";
+import Button from "@mui/material/Button";
 
 export default function HomePage() {
   const topics = [
     "Principles of Rocketry",
-    "Principles of Rocketry",
-    "Principles of Rocketry",
+    "Quantum Mechanics",
+    "Topology",
   ];
 
   const suggestedTopics = [
@@ -102,7 +103,7 @@ export default function HomePage() {
       setIsTransitioning(true);
       setCurrentFeedId(feed_id);
 
-      const res = await fetch(`http://localhost:5000/studysets/get?username=eli&id=${encodeURIComponent(feed_id)}`, {
+      const res = await fetch(`http://127.0.0.1:5000/studysets/get?username=eli&id=${encodeURIComponent(feed_id)}`, {
         method: 'GET',
         headers: { Accept: 'application/json' },
       });
@@ -147,20 +148,33 @@ export default function HomePage() {
 
   if (showHero) {
     return (
-      <div style={{
-        animation: 'fadeIn 0.5s ease-in-out',
-        height: '100vh',
-        width: '100vw'
-      }}>
-        <style>
-          {`
-            @keyframes fadeIn {
-              from { opacity: 0; transform: scale(0.95); }
-              to { opacity: 1; transform: scale(1); }
-            }
-          `}
-        </style>
-        <Hero onBack={handleBackToHome} content={feedData} searchQuery={inputValue} />    
+      
+      <div className="h-screen w-screen">
+        <Button style={{position: 'absolute', top: 20, left: 20, zIndex: 50}} variant="contained" href="/">
+          Back to Home
+        </Button>
+        <PopUp />
+        <div className="flex h-full">
+
+          <main className="flex-1 ">
+            <div style={{
+              animation: 'fadeIn 0.5s ease-in-out',
+              height: '100vh',
+              width: '100vw',
+              paddingLeft: 'calc(100vw - 1000px)',
+            }}>
+              <style>
+                {`
+                  @keyframes fadeIn {
+                    from { opacity: 0; transform: scale(0.95); }
+                    to { opacity: 1; transform: scale(1); }
+                  }
+                `}
+              </style>
+              <Hero onBack={handleBackToHome} content={feedData} searchQuery={inputValue} />    
+            </div>
+          </main>
+        </div>      
       </div>
     );
   }
@@ -291,7 +305,9 @@ export default function HomePage() {
       `}</style>
       
       <div className={`min-h-screen flex items-center justify-center p-4 relative overflow-hidden ${isTransitioning ? 'transitioning' : ''}`}>
+        
         <div className="absolute inset-0 z-0 opacity-80 pointer-events-none"></div>
+        
         <div className="absolute top-10 left-0 w-[600px] h-[600px] rounded-full filter blur-3xl opacity-60 animate-blob blob-gradient"></div>
         <div className="absolute top-20 right-0 w-[550px] h-[550px] rounded-full filter blur-3xl opacity-60 animate-blob2 blob-gradient2"></div>
         <div className="absolute bottom-10 left-1/4 w-[650px] h-[650px] rounded-full filter blur-3xl opacity-60 animate-blob3 blob-gradient3"></div>
