@@ -6,13 +6,28 @@ const colorPalettes = [
   { start: 'rgba(239, 68, 68, 0.9)', middle: 'rgba(234, 179, 8, 1)', end: 'rgba(239, 68, 68, 0.9)', shadow: 'rgba(239, 68, 68, 0.6)' }, // Red/Yellow
   { start: 'rgba(16, 185, 129, 0.9)', middle: 'rgba(5, 150, 105, 1)', end: 'rgba(16, 185, 129, 0.9)', shadow: 'rgba(16, 185, 129, 0.6)' }, // Teal/Green
 ];
+const largePalette = { start: 'linear-gradient(90deg,#ff7a7a 0%, #ffd166 50%, #ff7a7a 100%)', startColor: '#ff7a7a', middle: '#ffd166', end: '#ff7a7a', shadow: 'rgba(255,122,122,0.6)' };
 
-export default function ProgressBar({ progress, autoProgress = false }) {
+export default function ProgressBar({ progress, autoProgress = false, style_change}) {
   const [currentProgress, setCurrentProgress] = useState(progress);
   // State to hold the current color palette index
   const [colorIndex, setColorIndex] = useState(0);
-
+  const currentPalette = style_change ? largePalette : colorPalettes[colorIndex];
   // Effect for progress and color change
+   const cssVars = style_change
+   ? {
+       '--start-color': currentPalette.startColor,
+       '--middle-color': currentPalette.middle,
+       '--end-color': currentPalette.end,
+       '--shadow-color': currentPalette.shadow,
+     }
+   : {
+       '--start-color': currentPalette.start,
+       '--middle-color': currentPalette.middle,
+       '--end-color': currentPalette.end,
+       '--shadow-color': currentPalette.shadow,
+     };
+
   useEffect(() => {
     let progressInterval;
     let colorInterval;
@@ -43,25 +58,24 @@ export default function ProgressBar({ progress, autoProgress = false }) {
     }
   }, [autoProgress, progress]);
 
-  // Get the current palette
-  const currentPalette = colorPalettes[colorIndex];
 
   return (
     <>
       <div 
-        className="progress-container" 
-        // Set CSS variables on the container element
-        style={{
-          '--start-color': currentPalette.start,
-          '--middle-color': currentPalette.middle,
-          '--end-color': currentPalette.end,
-          '--shadow-color': currentPalette.shadow,
-        }}
+        className={`progress-container ${style_change ? 'large' : ''}`}
+       style={cssVars}
       >
-        <div className="progress-bar" style={{ width: `${currentProgress}%` }}>
+        <div className={`progress-bar ${style_change ? 'large' : ''}`}
+         style={{
+           width: `${currentProgress}%`,
+           background: style_change
+             ? // when large use a punchy gradient composed from vars (fallback to CSS vars)
+               `linear-gradient(90deg, var(--start-color) 0%, var(--middle-color) 50%, var(--end-color) 100%)`
+             : undefined,
+         }}>
           <div className="progress-glow"></div>
         </div>
-        <span className="progress-text">{currentProgress}%</span>
+        <span className={`progress-text ${style_change ? 'large' : ''}`}>{currentProgress}%</span>
       </div>
 
       <style jsx>{`
@@ -128,6 +142,23 @@ export default function ProgressBar({ progress, autoProgress = false }) {
           text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
           pointer-events: none;
         }
+
+        .progress-text.large {
+         font-size: 12px;
+       }
+
+       .progress-text {
+         position: absolute;
+         top: 50%;
+         left: 50%;
+         transform: translate(-50%, -50%);
+         color: rgba(255, 255, 255, 0.9);
+         font-size: 10px;
+         font-weight: 700;
+         text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+         pointer-events: none;
+       }
+
       `}</style>
     </>
   );

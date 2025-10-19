@@ -13,7 +13,7 @@ export default function PopUp() {
   const [sidebar, setSidebar] = useState(true);
 
   const showSidebar = () => setSidebar(sidebar);
-    
+
 
   useEffect(() => {
     if (sidebar) {
@@ -44,13 +44,16 @@ export default function PopUp() {
             
             {SidebarData.map((item, index) => {
             return (
+                
                 <li key={index} className="nav-item">
                         <div className="cool-top">
                             <span className="nav-title">{item.title}</span>
                             <div className="nav-icon">
                                     {item.icon}
                             </div>
+                            <ProgressBar progress={"30"} style_change={true}/>
                         </div>
+                        
                         <div className="nav-card">
                             
                             {/* Use a DIV instead of UL to wrap the inner links */}
@@ -61,7 +64,9 @@ export default function PopUp() {
                                             <Link href={item1.path} onClick={showSidebar}>
                                                 <span className="nav-title-sub">{item1.title}</span>
                                             </Link>
-                                            <ProgressBar progress={item1.progress}/>
+                                            {(item1.progress_yes === "true") && (
+                                              <ProgressBar progress={item1.progress} style_change={false}/>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
