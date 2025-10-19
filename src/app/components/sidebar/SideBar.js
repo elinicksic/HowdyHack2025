@@ -89,6 +89,17 @@ export default function PopUp() {
           z-index: 1001;
           pointer-events: auto;
         }
+          
+        @media screen and (max-width: 1200px) {
+          .nav-menu,
+          .nav-menu.active,
+          .floating-menu-button {
+            display: none !important;
+            pointer-events: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+          }
+        }
 
         .cool-top{
             display: flex;
