@@ -1,6 +1,8 @@
-"use client";
+"use client"
 import { useState, useEffect, useRef } from 'react';
 import { Heart, MessageCircle, Share2, Bookmark, X, Send } from 'lucide-react';
+import React from "react";
+import PopUp from "./components/SideBar";
 
 // Sample comments data
 const generateComments = () => [
