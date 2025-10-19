@@ -9,7 +9,7 @@ export const reelsContent = [
     description: 'Learn how water moves through Earth\'s atmosphere',
     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     emoji: '💧',
-    likes: 1234,
+    likes: 67,
     comments: 56
   },
   {
@@ -29,7 +29,7 @@ export const reelsContent = [
     description: 'How plants convert sunlight into energy',
     background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
     emoji: '🌱',
-    likes: 2456,
+    likes: 6767,
     comments: 89
   },
   {
@@ -39,7 +39,7 @@ export const reelsContent = [
     content: 'An object at rest stays at rest, and an object in motion stays in motion unless acted upon by an external force.',
     background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
     emoji: '⚛️',
-    likes: 3421,
+    likes: 6700,
     comments: 134
   },
   {
@@ -65,7 +65,7 @@ export const reelsContent = [
     back: 'Deoxyribonucleic acid - the molecule that carries genetic information',
     background: 'linear-gradient(135deg, #fa8bff 0%, #2bd2ff 90%, #2bff88 100%)',
     emoji: '🧪',
-    likes: 1567,
+    likes: 67.00,
     comments: 45
   },
   {
@@ -81,7 +81,19 @@ export const reelsContent = [
     ],
     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     emoji: '📝',
-    likes: 3210,
+    likes: 0.67,
     comments: 156
-  }
+  },
+  {
+  id: 8,
+  type: 'video',
+  title: 'Duckie Video',
+  videoUrl: '/duckie.mp4',  // Add this line
+  emoji: '🦆',
+  likes: 2456,
+  comments: 89,
+  muted: true,  // Start muted (Instagram style)
+  autoPlay: true  // Auto-play when visible
+}
+
 ];
