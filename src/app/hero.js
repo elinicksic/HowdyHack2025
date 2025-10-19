@@ -150,7 +150,7 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
                 fontSize: '18px',
                 flexShrink: 0
               }}>
-                {comment.avatar}
+                {comment.pfp_emoji}
               </div>
 
               <div style={{ flex: 1 }}>
