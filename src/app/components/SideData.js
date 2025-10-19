@@ -3,42 +3,53 @@ import {} from "react-icons"
 import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
 import * as IoIcons from "react-icons/io";
+import { MdEngineering } from "react-icons/md";
+import { SlChemistry } from "react-icons/sl";
 
 export const SidebarData = [
   {
-    title: "Home",
+    title: "Engineering 102",
     path: "/",
-    icon: <AiIcons.AiFillHome />,
+    icon: <MdEngineering />,
     cName: "nav-text",
+    categories: [
+      {
+        title: "function",
+        path: "/function",
+        progress: "90",
+        icon: <IoIcons.IoIosPaper />,
+        cName: "nav-text",
+      },
+      {
+        title: "Lambda",
+        progress: "15",
+        path: "/Lambda",
+        icon: <FaIcons.FaCartPlus />,
+        cName: "nav-text",
+      },
+    ]
   },
   {
-    title: "Reports",
-    path: "/reports",
-    icon: <IoIcons.IoIosPaper />,
-    cName: "nav-text",
-  },
-  {
-    title: "Products",
-    path: "/products",
-    icon: <FaIcons.FaCartPlus />,
-    cName: "nav-text",
-  },
-  {
-    title: "Team",
+    title: "Chemistry",
     path: "/team",
-    icon: <IoIcons.IoMdPeople />,
+    icon: <SlChemistry />,
     cName: "nav-text",
+    categories: [
+      {
+      title: "Stichiometry",
+      path: "/stichiometry",
+      progress: "40",
+      icon: <FaIcons.FaEnvelopeOpenText />,
+      cName: "nav-text",
+    },
+      {
+      title: "Ideal gases",
+      path: "/ideal gases",
+      progress: "20",
+      icon: <IoIcons.IoMdHelpCircle />,
+      cName: "nav-text",
+    },
+    ]
   },
-  {
-    title: "Messages",
-    path: "/messages",
-    icon: <FaIcons.FaEnvelopeOpenText />,
-    cName: "nav-text",
-  },
-  {
-    title: "Support",
-    path: "/support",
-    icon: <IoIcons.IoMdHelpCircle />,
-    cName: "nav-text",
-  },
+  
 ];

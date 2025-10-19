@@ -4,16 +4,24 @@ import { useState, useEffect } from 'react';
 export function QuizCard({ content, isActive, onDoubleTap }) {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
+  const [showGoodWork, setShowGoodWork] = useState(false);
 
   const handleAnswer = (index) => {
     setSelectedAnswer(index);
     setShowResult(true);
+    
+    // Show good work image if correct
+    if (index === content.correctAnswer) {
+      setShowGoodWork(true);
+      setTimeout(() => setShowGoodWork(false), 2000); // Show for 2 seconds
+    }
   };
 
   useEffect(() => {
     if (!isActive) {
       setSelectedAnswer(null);
       setShowResult(false);
+      setShowGoodWork(false);
     }
   }, [isActive]);
 
@@ -29,7 +37,8 @@ export function QuizCard({ content, isActive, onDoubleTap }) {
         alignItems: 'center',
         padding: '30px 20px',
         background: content.background,
-        cursor: 'pointer'
+        cursor: 'pointer',
+        position: 'relative'
       }}
     >
       <div style={{ fontSize: '64px', marginBottom: '20px' }}>{content.emoji}</div>
@@ -54,8 +63,8 @@ export function QuizCard({ content, isActive, onDoubleTap }) {
               onClick={() => !showResult && handleAnswer(index)}
               disabled={showResult}
               style={{
-                padding: '16px',
-                fontSize: '15px',
+                padding: '14px',
+                fontSize: '14px',
                 fontWeight: '600',
                 color: 'white',
                 background: bgColor,
@@ -76,6 +85,57 @@ export function QuizCard({ content, isActive, onDoubleTap }) {
           {selectedAnswer === content.correct_idx ? '✅ Correct!' : '❌ Try again!'}
         </p>
       )}
+
+      {/* Good Work Pop-up */}
+      {showGoodWork && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 100,
+          animation: 'goodWorkPop 2s ease-out'
+        }}>
+          <img 
+            src="/goodWork.png" 
+            alt="Good Work!"
+            style={{
+              width: '300px',
+              height: 'auto',
+              filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.5))'
+            }}
+          />
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes goodWorkPop {
+          0% {
+            transform: translate(-50%, -50%) scale(0) rotate(-10deg);
+            opacity: 0;
+          }
+          10% {
+            transform: translate(-50%, -50%) scale(1.2) rotate(5deg);
+            opacity: 1;
+          }
+          20% {
+            transform: translate(-50%, -50%) scale(1) rotate(-2deg);
+            opacity: 1;
+          }
+          30% {
+            transform: translate(-50%, -50%) scale(1.05) rotate(0deg);
+            opacity: 1;
+          }
+          85% {
+            transform: translate(-50%, -50%) scale(1) rotate(0deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(0.8) rotate(0deg);
+            opacity: 0;
+          }
+        }
+      `}</style>
     </div>
   );
 }

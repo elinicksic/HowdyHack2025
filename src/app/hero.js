@@ -2,7 +2,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { Heart, MessageCircle, Share2, Bookmark, X, Send } from 'lucide-react';
 import { reelsContent } from './data/reelsContent';
-import PopUp from "./components/SideBar"
+import Button from '@mui/material/Button';
+
+import { LuMousePointer2 } from "react-icons/lu";
+import PopUp from "./components/SideBar";
 import { 
   QuizCard, 
   ImageCard, 
@@ -13,8 +16,9 @@ import {
   ListCard,
   PostCard
 } from './components/ReelTypes';
-
-
+const handleClick = () => {
+    alert('Button clicked!');
+  };
 
 // Sample comments data
 const generateComments = () => [
@@ -74,6 +78,8 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
         }}
       />
 
+      
+
       <div style={{
         position: 'fixed',
         bottom: 0,
@@ -120,6 +126,7 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
           >
             <X size={22} color="white" />
           </button>
+          
         </div>
 
         <div style={{
@@ -257,7 +264,7 @@ const Reel = ({ content, isActive }) => {
       case 'question':
         return <QuizCard content={content} isActive={isActive} onDoubleTap={handleDoubleTap} />;
       case 'image':
-        return <ImageCard content={content} onDoubleTap={handleDoubleTap} />;
+        return <ImageCard content={content} isActive={isActive} onDoubleTap={handleDoubleTap} />;
       case 'video':
         return <VideoCard content={content} onDoubleTap={handleDoubleTap} />;
       case 'post':
@@ -283,6 +290,18 @@ const Reel = ({ content, isActive }) => {
     }}>
       {/* Render Content Based on Type */}
       {renderContent()}
+
+      {/* Bottom Gradient Overlay */}
+      <div style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: '200px',
+        background: 'linear-gradient(to top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.4) 10%, transparent 100%)',
+        pointerEvents: 'none',
+        zIndex: 5
+      }} />
 
       {/* Double Tap Heart Animation */}
       {showHeartAnimation && (
@@ -324,44 +343,52 @@ const Reel = ({ content, isActive }) => {
         }
       `}</style>
 
-          {/* Right Side Action Buttons */}
-    <div style={{
-      position: 'absolute',
-      right: '12px',
-      bottom: '100px',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '16px',
-      zIndex: 10
-    }}>
-      {content.likes !== undefined && (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <button
-            onClick={handleLikeClick}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '6px',
-              transition: 'transform 0.2s',
-              opacity: 0.85
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'scale(1.1)';
-              e.currentTarget.style.opacity = '1';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'scale(1)';
-              e.currentTarget.style.opacity = '0.85';
-            }}
-          >
-            <Heart size={24} color={liked ? '#ff4458' : 'white'} fill={liked ? '#ff4458' : 'none'} strokeWidth={2.5} />
-          </button>
-          <span style={{ color: 'white', fontSize: '11px', fontWeight: 'bold', marginTop: '2px', opacity: 0.85 }}>
-            {(content.likes + (liked ? 1 : 0)).toLocaleString()}
-          </span>
-        </div>
-      )}
+      {/* Right Side Action Buttons */}
+      <div style={{
+        position: 'absolute',
+        right: '12px',
+        bottom: '100px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px',
+        zIndex: 10
+      }}>
+        {content.likes !== undefined && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <button
+              onClick={handleLikeClick}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '6px',
+                transition: 'transform 0.2s',
+                opacity: 0.85,
+                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.1)';
+                e.currentTarget.style.opacity = '1';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.opacity = '0.85';
+              }}
+            >
+              <Heart size={24} color={liked ? '#ff4458' : 'white'} fill={liked ? '#ff4458' : 'none'} strokeWidth={2.5} />
+            </button>
+            <span style={{ 
+              color: 'white', 
+              fontSize: '11px', 
+              fontWeight: 'bold', 
+              marginTop: '2px', 
+              opacity: 0.85,
+              textShadow: '0 2px 4px rgba(0,0,0,0.7)'
+            }}>
+              {(content.likes + (liked ? 1 : 0)).toLocaleString()}
+            </span>
+          </div>
+        )}
 
       {content.comments !== undefined && (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -392,50 +419,51 @@ const Reel = ({ content, isActive }) => {
         </div>
       )}
 
-      <button
-        style={{
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          padding: '6px',
-          transition: 'transform 0.2s',
-          opacity: 0.85
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'scale(1.1)';
-          e.currentTarget.style.opacity = '1';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'scale(1)';
-          e.currentTarget.style.opacity = '0.85';
-        }}
-      >
-        <Share2 size={22} color="white" strokeWidth={2.5} />
-      </button>
+        <button
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '6px',
+            transition: 'transform 0.2s',
+            opacity: 0.85,
+            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.1)';
+            e.currentTarget.style.opacity = '1';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.opacity = '0.85';
+          }}
+        >
+          <Share2 size={22} color="white" strokeWidth={2.5} />
+        </button>
 
-      <button
-        onClick={() => setBookmarked(!bookmarked)}
-        style={{
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          padding: '6px',
-          transition: 'transform 0.2s',
-          opacity: 0.85
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'scale(1.1)';
-          e.currentTarget.style.opacity = '1';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'scale(1)';
-          e.currentTarget.style.opacity = '0.85';
-        }}
-      >
-        <Bookmark size={22} color="white" fill={bookmarked ? 'white' : 'none'} strokeWidth={2.5} />
-      </button>
-    </div>
-
+        <button
+          onClick={() => setBookmarked(!bookmarked)}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '6px',
+            transition: 'transform 0.2s',
+            opacity: 0.85,
+            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.1)';
+            e.currentTarget.style.opacity = '1';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.opacity = '0.85';
+          }}
+        >
+          <Bookmark size={22} color="white" fill={bookmarked ? 'white' : 'none'} strokeWidth={2.5} />
+        </button>
+      </div>
 
       {/* Bottom Info */}
       <div style={{
@@ -455,11 +483,17 @@ const Reel = ({ content, isActive }) => {
             alignItems: 'center',
             justifyContent: 'center',
             fontSize: '16px',
-            border: '2px solid white'
+            border: '2px solid white',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
           }}>
             {content.emoji}
           </div>
-          <span style={{ color: 'white', fontWeight: 'bold', fontSize: '13px' }}>
+          <span style={{ 
+            color: 'white', 
+            fontWeight: 'bold', 
+            fontSize: '13px',
+            textShadow: '0 2px 4px rgba(0,0,0,0.7)'
+          }}>
             @studyscroll
           </span>
           <button style={{
@@ -470,12 +504,19 @@ const Reel = ({ content, isActive }) => {
             borderRadius: '5px',
             fontSize: '11px',
             fontWeight: 'bold',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
           }}>
             Follow
           </button>
         </div>
-        <p style={{ color: 'white', fontSize: '13px', lineHeight: '1.3' }}>
+        <p style={{ 
+          color: 'white', 
+          fontSize: '13px', 
+          lineHeight: '1.3',
+          textShadow: '0 2px 4px rgba(0,0,0,0.7)'
+        }}>
           <span style={{ fontWeight: 'bold' }}>StudyScroll</span> {content.title || content.question?.substring(0, 50) + '...'}
         </p>
       </div>
@@ -498,6 +539,7 @@ const Reel = ({ content, isActive }) => {
          content.type === 'poll' ? '📊 Poll' :
          content.type === 'flashcard' ? '🔄 Flashcard' :
          content.type === 'list' ? '📋 List' :
+         content.type === 'image' ? '📷 Images' :
          '📖 Lesson'}
       </div>
 
@@ -603,47 +645,53 @@ export default function VerticalScrollGallery({ content }) {
 
   return (
     <>
-    
-    <div className="home"> 
-      
-    <div style={{
-      width: '100vw',
-      height: '100vh',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#0a0a0a',
-      position: 'relative',
-      overflow: 'hidden',
-      padding: '20px' // Changed from '40px 20px'
-    }}>
-       <PopUp/>
-      {/* MANY MORE Floating Gradient Blobs with Higher Opacity */}
-      <div style={{
-        position: 'absolute',
-        top: '8%',
-        left: '3%',
-        width: '550px',
-        height: '550px',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(168,85,247,0.35) 0%, transparent 70%)',
-        filter: 'blur(70px)',
-        animation: 'blob 10s ease-in-out infinite',
-        pointerEvents: 'none'
-      }} />
-      
-      <div style={{
-        position: 'absolute',
-        top: '45%',
-        right: '2%',
-        width: '500px',
-        height: '500px',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(236,72,153,0.35) 0%, transparent 70%)',
-        filter: 'blur(70px)',
-        animation: 'blob2 13s ease-in-out infinite',
-        pointerEvents: 'none'
-      }} />
+      <style jsx global>{`
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        body {
+          overflow: hidden;
+          background: #0a0a0a;
+        }
+        @keyframes blob {
+          0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+          33% { transform: translate(40px, -60px) scale(1.2) rotate(120deg); }
+          66% { transform: translate(-30px, 30px) scale(0.85) rotate(240deg); }
+          100% { transform: translate(0px, 0px) scale(1) rotate(360deg); }
+        }
+        @keyframes blob2 {
+          0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+          33% { transform: translate(-50px, 40px) scale(1.1) rotate(-120deg); }
+          66% { transform: translate(60px, -40px) scale(0.9) rotate(-240deg); }
+          100% { transform: translate(0px, 0px) scale(1) rotate(-360deg); }
+        }
+        @keyframes blob3 {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, 50px) scale(1.25); }
+          66% { transform: translate(-40px, -30px) scale(0.8); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+        @keyframes blob4 {
+          0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+          33% { transform: translate(-35px, -45px) scale(1.15) rotate(90deg); }
+          66% { transform: translate(45px, 35px) scale(0.95) rotate(180deg); }
+          100% { transform: translate(0px, 0px) scale(1) rotate(270deg); }
+        }
+        @keyframes blob5 {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(55px, -35px) scale(1.3); }
+          66% { transform: translate(-25px, 45px) scale(0.75); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+        @keyframes blob6 {
+          0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+          33% { transform: translate(-45px, 55px) scale(1.05) rotate(-90deg); }
+          66% { transform: translate(35px, -25px) scale(1.2) rotate(-180deg); }
+          100% { transform: translate(0px, 0px) scale(1) rotate(-270deg); }
+        }
+      `}</style>
 
       <div style={{
         position: 'absolute',
@@ -737,12 +785,93 @@ export default function VerticalScrollGallery({ content }) {
           {/* Progress Dots */}
           <div style={{
             position: 'absolute',
-            bottom: '70px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            display: 'flex',
-            gap: '5px',
-            zIndex: 100
+            top: '8%',
+            left: '3%',
+            width: '550px',
+            height: '550px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(168,85,247,0.35) 0%, transparent 70%)',
+            filter: 'blur(70px)',
+            animation: 'blob 10s ease-in-out infinite',
+            pointerEvents: 'none'
+          }} />
+          
+          <div style={{
+            position: 'absolute',
+            top: '45%',
+            right: '2%',
+            width: '500px',
+            height: '500px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(236,72,153,0.35) 0%, transparent 70%)',
+            filter: 'blur(70px)',
+            animation: 'blob2 13s ease-in-out infinite',
+            pointerEvents: 'none'
+          }} />
+
+          <div style={{
+            position: 'absolute',
+            bottom: '8%',
+            left: '12%',
+            width: '600px',
+            height: '600px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(59,130,246,0.35) 0%, transparent 70%)',
+            filter: 'blur(70px)',
+            animation: 'blob3 16s ease-in-out infinite',
+            pointerEvents: 'none'
+          }} />
+
+          <div style={{
+            position: 'absolute',
+            top: '25%',
+            right: '20%',
+            width: '450px',
+            height: '450px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(251,191,36,0.3) 0%, transparent 70%)',
+            filter: 'blur(70px)',
+            animation: 'blob4 14s ease-in-out infinite',
+            pointerEvents: 'none'
+          }} />
+
+          <div style={{
+            position: 'absolute',
+            bottom: '30%',
+            right: '8%',
+            width: '520px',
+            height: '520px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(34,197,94,0.3) 0%, transparent 70%)',
+            filter: 'blur(70px)',
+            animation: 'blob5 15s ease-in-out infinite',
+            pointerEvents: 'none'
+          }} />
+
+          <div style={{
+            position: 'absolute',
+            top: '60%',
+            left: '25%',
+            width: '480px',
+            height: '480px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(239,68,68,0.3) 0%, transparent 70%)',
+            filter: 'blur(70px)',
+            animation: 'blob6 17s ease-in-out infinite',
+            pointerEvents: 'none'
+          }} />
+
+          {/* Translucent Glassmorphic Border Wrapper */}
+          <div style={{
+            position: 'relative',
+            width: 'min(calc((100vh - 80px) * 9 / 16), calc(100vw - 40px))',
+            height: 'calc(100vh - 80px)',
+            borderRadius: '36px',
+            background: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(40px) saturate(200%)',
+            border: '1px solid rgba(255, 255, 255, 0.18)',
+            boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 0 60px rgba(255, 255, 255, 0.05)',
+            padding: '8px',
           }}>
             {content.feed.map((_, index) => (
               <div
@@ -761,8 +890,6 @@ export default function VerticalScrollGallery({ content }) {
           </div>
         </div>
       </div>
-    </div>
-    </div>
     </>
   );
 }

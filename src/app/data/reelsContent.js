@@ -7,30 +7,22 @@ export const reelsContent = [
     type: 'image',
     title: 'The Water Cycle',
     description: 'Learn how water moves through Earth\'s atmosphere',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    images: ['/water1.jpg', '/water2.jpg', '/water3.jpg'],  // NEW: Use 'images' array
     emoji: '💧',
-    likes: 67,
-    comments: 56
+    category: 'Science',
+    likes: 1234,
+    comments: 56,
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' // Fallback if no images
   },
   {
     id: 2,
     type: 'quiz',
     question: 'What is the powerhouse of the cell?',
-    options: ['Nucleus', 'Mitochondria', 'Ribosome', 'Chloroplast'],
-    correctAnswer: 1,
+    options: ['Nucleus', 'Mitochondria', 'HELP ME', 'Chloroplast'],
+    correctAnswer: 2, // index starts from 0
     background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
     emoji: '🧬',
     comments: 42
-  },
-  {
-    id: 3,
-    type: 'video',
-    title: 'Photosynthesis Explained',
-    description: 'How plants convert sunlight into energy',
-    background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-    emoji: '🌱',
-    likes: 6767,
-    comments: 89
   },
   {
     id: 4,

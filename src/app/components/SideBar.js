@@ -6,11 +6,14 @@ import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
 import { SidebarData } from "./SideData";
 import React from "react";
+import ProgressBar from "./sidebarcomp/progressbar"
+
 
 export default function PopUp() {
   const [sidebar, setSidebar] = useState(true);
 
   const showSidebar = () => setSidebar(sidebar);
+
 
   useEffect(() => {
     if (sidebar) {
@@ -20,10 +23,9 @@ export default function PopUp() {
     }
   }, [sidebar]);
 
-  var count = -1;
-
   return (
     <>
+
       <IconContext.Provider value={{ color: "undefined" }}>
         {/* Floating Menu Button */}
         {/* <div className="floating-menu-button">
@@ -35,40 +37,41 @@ export default function PopUp() {
         {/* Overlay - removed to allow background interaction */}
 
         {/* Floating Sidebar Items */}
-        <nav className={sidebar ? "nav-menu active" : "nav-menu"}>
-          <ul className="nav-menu-items">
-            {SidebarData.map((item, index) => {
-              count = count + 1;
+        
 
-              if(count %3 == 0){
-              return (
+        <nav className={sidebar ? "nav-menu active" : "nav-menu"}>
+        <ul className="nav-menu-items">
+            
+            {SidebarData.map((item, index) => {
+            return (
                 <li key={index} className="nav-item">
-                  <Link href={item.path} onClick={showSidebar}>
-                    
-                    <div className="nav-card">
-                      <div className="nav-icon">
-                        {item.icon}
-                      </div>
-                      <span className="nav-title">{item.title}</span>
-                    </div>
-                  </Link>
+                        <div className="cool-top">
+                            <span className="nav-title">{item.title}</span>
+                            <div className="nav-icon">
+                                    {item.icon}
+                            </div>
+                        </div>
+                        <div className="nav-card">
+                            
+                            {/* Use a DIV instead of UL to wrap the inner links */}
+                            {item.categories && item.categories.length > 0 && (
+                                <div>
+                                    {item.categories.map((item1, index1) => (
+                                        <div key={index1} className="nav-part-item"> {/* Use DIV or SPAN instead of LI */}
+                                            <Link href={item1.path} onClick={showSidebar}>
+                                                <span className="nav-title-sub">{item1.title}</span>
+                                            </Link>
+                                            <ProgressBar progress={item1.progress}/>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            
+                        </div>
                 </li>
-              );}else{
-                return(
-                <li key={index} className="nav-item">
-                  <Link href={item.path} onClick={showSidebar}>
-                    
-                    <div className="nav-card-min">
-                      <div className="nav-icon">
-                        {item.icon}
-                      </div>
-                      <span className="nav-title">{item.title}</span>
-                    </div>
-                  </Link>
-                </li>);
-              }
+            );
             })}
-          </ul>
+        </ul>
         </nav>
       </IconContext.Provider>
 
@@ -82,6 +85,30 @@ export default function PopUp() {
           pointer-events: auto;
         }
 
+        .cool-top{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            /* p-4 sm:p-6 */
+            padding: 1rem; /* p-4 */
+
+            /* space-x-3 sm:space-x-4 */
+            /* We use padding right on the icon and padding left on the text for consistent spacing */
+            /* A common way to handle space-x is margin, but here we'll use gap or margin to the right on the icon */
+
+            /* bg-gray-800 */
+            background-color: #1f2937;
+
+            /* border-t-4 border-t-indigo-500 */
+            border-top: 4px solid #6366f1;
+
+            /* rounded-t-2xl rounded-b-lg */
+            border-top-left-radius: 1rem;    /* rounded-t-2xl */
+            border-top-right-radius: 1rem;   /* rounded-t-2xl */
+            border-bottom-left-radius: 0.5rem; /* rounded-b-lg */
+            border-bottom-right-radius: 0.5rem; /* rounded-b-lg */
+        }
         .menu-toggle-btn {
           background: rgba(139, 123, 209, 0.25);
           backdrop-filter: blur(20px) saturate(180%);
@@ -165,16 +192,30 @@ export default function PopUp() {
           -webkit-backdrop-filter: blur(20px) saturate(180%);
           border: 1px solid rgba(255, 255, 255, 0.15);
           border-radius: 24px;
-          padding: 24px 32px;
+          padding: 32px;
           display: flex;
-          align-items: center;
-          gap: 20px;
+          flex-direction: column;
+          gap: 24px;
           min-width: 280px;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.3);
           position: relative;
           overflow: hidden;
         }
+        
+        .nav-card > div {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          width: 100%;
+        }
+        
+        .nav-part-item {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
         .nav-card-min{
           background: rgba(76, 70, 117, 0.4);
           backdrop-filter: blur(20px) saturate(180%);
@@ -209,17 +250,6 @@ export default function PopUp() {
           pointer-events: none;
         }
 
-        .nav-card:hover {
-          background: rgba(76, 70, 117, 0.6);
-          border-color: rgba(255, 255, 255, 0.3);
-          transform: translateX(10px) scale(1.03);
-          box-shadow: 0 12px 40px 0 rgba(139, 123, 209, 0.5);
-        }
-
-        .nav-card:hover::before {
-          opacity: 1;
-        }
-
         .nav-icon {
           color: #ffffff;
           font-size: 1.8rem;
@@ -230,11 +260,14 @@ export default function PopUp() {
           transition: transform 0.3s ease;
         }
 
-        .nav-card:hover .nav-icon {
-          transform: scale(1.1) rotate(-5deg);
-        }
-
         .nav-title {
+          color: rgba(255, 255, 255, 0.95);
+          font-size: 1.25rem;
+          font-weight: 600;
+          letter-spacing: 0.5px;
+          text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        .nav-title-sub {
           color: rgba(255, 255, 255, 0.95);
           font-size: 1.25rem;
           font-weight: 600;
