@@ -1,227 +1,156 @@
 "use client";
-import { useState, useRef, useEffect } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
-export function ImageCard({ content, onDoubleTap, isActive }) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const scrollRef = useRef(null);
-  const touchStartX = useRef(0);
+export function ImageCard({ content, onDoubleTap }) {
+  const images = useMemo(() => {
+    if (Array.isArray(content?.images) && content.images.length > 0) return content.images;
+    if (content?.file) return [content.file];
+    return [];
+  }, [content]);
 
-  // Support for single image or array of images
-  const images = Array.isArray(content.images) ? content.images : (content.imageUrl ? [content.imageUrl] : []);
+  const imageUrl = images[0] || '';
+  const title = content?.title || '';
+  const description = content?.description || '';
+  const alt = description || title || 'image';
 
-  const handleTouchStart = (e) => {
-    touchStartX.current = e.touches[0].clientX;
+  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
+  const cardRef = useRef(null);
+
+  const handleMouseMove = (e) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const mouseX = e.clientX - centerX;
+    const mouseY = e.clientY - centerY;
+
+    // Max ±15 degrees like FlashCard
+    const rotateY = (mouseX / (rect.width / 2)) * 15;
+    const rotateX = -(mouseY / (rect.height / 2)) * 15;
+
+    setTilt({ rotateX, rotateY });
   };
 
-  const handleTouchEnd = (e) => {
-    const touchEndX = e.changedTouches[0].clientX;
-    const diff = touchStartX.current - touchEndX;
-
-    // Swipe threshold
-    if (Math.abs(diff) > 50) {
-      if (diff > 0 && currentImageIndex < images.length - 1) {
-        // Swipe left - next image
-        setCurrentImageIndex(currentImageIndex + 1);
-      } else if (diff < 0 && currentImageIndex > 0) {
-        // Swipe right - previous image
-        setCurrentImageIndex(currentImageIndex - 1);
-      }
-    }
-  };
-
-  const handleDotClick = (index) => {
-    setCurrentImageIndex(index);
-  };
-
-  // Arrow key navigation (only when this card is active)
-  useEffect(() => {
-    if (!isActive) return;
-
-    const handleKeyDown = (e) => {
-      if (e.key === 'ArrowLeft' && currentImageIndex > 0) {
-        e.preventDefault();
-        e.stopPropagation();
-        setCurrentImageIndex(currentImageIndex - 1);
-      } else if (e.key === 'ArrowRight' && currentImageIndex < images.length - 1) {
-        e.preventDefault();
-        e.stopPropagation();
-        setCurrentImageIndex(currentImageIndex + 1);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isActive, currentImageIndex, images.length]);
-
-  // Reset to first image when card becomes inactive
-  useEffect(() => {
-    if (!isActive) {
-      setCurrentImageIndex(0);
-    }
-  }, [isActive]);
+  const handleMouseLeave = () => setTilt({ rotateX: 0, rotateY: 0 });
 
   return (
-    <div 
-      onDoubleClick={onDoubleTap}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
+    <div
       style={{
         width: '100%',
         height: '100%',
-        position: 'relative',
-        cursor: 'pointer',
-        overflow: 'hidden'
+        padding: '30px 20px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        background: content?.background || '#000'
       }}
     >
-      {/* Images Container */}
+      {/* 3D Tilt Container */}
       <div
-        ref={scrollRef}
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        onDoubleClick={onDoubleTap}
         style={{
           width: '100%',
-          height: '100%',
-          display: 'flex',
-          transition: 'transform 0.3s ease-out',
-          transform: `translateX(-${currentImageIndex * 100}%)`
+          maxWidth: '360px',
+          aspectRatio: '1', // square
+          perspective: '1000px',
+          position: 'relative',
+          userSelect: 'none'
         }}
       >
-        {images.map((imageUrl, index) => (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            transformStyle: 'preserve-3d',
+            transition: 'transform 0.4s cubic-bezier(0.4, 0.2, 0.2, 1)',
+            transform: `
+              rotateX(${tilt.rotateX}deg)
+              rotateY(${tilt.rotateY}deg)
+            `
+          }}
+        >
+          {/* Glassy image card (single face) */}
           <div
-            key={index}
             style={{
-              minWidth: '100%',
-              height: '100%',
-              position: 'relative'
+              position: 'absolute',
+              inset: 0,
+              background: 'rgba(255, 255, 255, 0.15)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: '20px',
+              border: '2px solid rgba(255, 255, 255, 0.3)',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+              overflow: 'hidden',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
           >
+            {/* Shine effect */}
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: `radial-gradient(circle at ${50 + tilt.rotateY * 2}% ${50 - tilt.rotateX * 2}%, rgba(255,255,255,0.18) 0%, transparent 60%)`,
+                pointerEvents: 'none',
+                transition: 'background 0.25s ease-out'
+              }}
+            />
             {imageUrl ? (
-              <img 
-                src={imageUrl}
-                alt={`${content.title} - Image ${index + 1}`}
+              <img
+                src={"http://localhost:5000/images/" + imageUrl}
+                alt={alt}
                 style={{
                   width: '100%',
                   height: '100%',
-                  objectFit: 'cover'
+                  objectFit: 'contain',
+                  backgroundColor: 'rgba(0,0,0,0.35)'
                 }}
+                draggable={false}
               />
             ) : (
-              <div style={{
-                width: '100%',
-                height: '100%',
-                background: content.background || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-              }} />
+              <div
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  background:
+                    content?.background ||
+                    'linear-gradient(135deg, #2b2b2b 0%, #1a1a1a 100%)'
+                }}
+                aria-label="No image available"
+              />
             )}
           </div>
-        ))}
-      </div>
-
-      {/* Image Navigation Dots (Top) - Only show if multiple images */}
-      {images.length > 1 && (
-        <div style={{
-          position: 'absolute',
-          top: '645px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex',
-          gap: '6px',
-          zIndex: 3
-        }}>
-          {images.map((_, index) => (
-            <div
-              key={index}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDotClick(index);
-              }}
-              style={{
-                width: currentImageIndex === index ? '24px' : '6px',
-                height: '6px',
-                borderRadius: '3px',
-                background: currentImageIndex === index 
-                  ? 'rgba(255, 255, 255, 0.9)' 
-                  : 'rgba(255, 255, 255, 0.4)',
-                transition: 'all 0.3s ease',
-                cursor: 'pointer',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
-              }}
-            />
-          ))}
         </div>
-      )}
-
-      {/* Gradient Overlay for better text readability */}
-      <div style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: '50%',
-        background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)',
-        zIndex: 1,
-        pointerEvents: 'none'
-      }} />
-
-      {/* Text Content */}
-      <div style={{
-        position: 'absolute',
-        bottom: '80px',
-        left: '20px',
-        right: '20px',
-        zIndex: 2
-      }}>
-        {content.emoji && (
-          <div style={{ 
-            fontSize: '48px', 
-            marginBottom: '12px',
-            textShadow: '0 2px 8px rgba(0,0,0,0.3)'
-          }}>
-            {content.emoji}
-          </div>
-        )}
-        
-        <h2 style={{ 
-          fontSize: '32px', 
-          fontWeight: 'bold', 
-          color: 'white', 
-          marginBottom: '12px',
-          lineHeight: '1.2',
-          textShadow: '0 2px 8px rgba(0,0,0,0.5)'
-        }}>
-          {content.title}
-        </h2>
-        
-        {content.description && (
-          <p style={{ 
-            fontSize: '16px', 
-            color: 'rgba(255, 255, 255, 0.95)', 
-            lineHeight: '1.5',
-            textShadow: '0 1px 4px rgba(0,0,0,0.5)',
-            maxWidth: '90%'
-          }}>
-            {content.description}
-          </p>
-        )}
       </div>
 
-      {/* Optional: Category badge */}
-      {content.category && (
-        <div style={{
-          position: 'absolute',
-          top: '20px',
-          left: '20px',
-          padding: '8px 16px',
-          background: 'rgba(0, 0, 0, 0.6)',
-          backdropFilter: 'blur(10px)',
-          borderRadius: '20px',
-          fontSize: '12px',
-          fontWeight: '600',
-          color: 'white',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
-          zIndex: 2
-        }}>
-          {content.category}
+      {/* Compact centered description */}
+      {(description) && (
+        <div
+          style={{
+            marginTop: 12,
+            width: '100%',
+            maxWidth: '360px',
+            color: 'rgba(255,255,255,0.92)',
+            lineHeight: 1.4,
+            fontSize: 14,
+            textAlign: 'center',
+            padding: '0 4px',
+            overflow: 'hidden',
+            display: '-webkit-box',
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical'
+          }}
+        >
+          {description}
         </div>
       )}
     </div>
-  );
-}
+
+
+    ); 
+  }
