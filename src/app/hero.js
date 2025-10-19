@@ -20,47 +20,151 @@ const handleClick = () => {
     alert('Button clicked!');
   };
 
-// Sample comments data
-const generateComments = () => [
-  { id: 1, user: 'sarah_learns', avatar: '👩‍🎓', text: 'This is so helpful! Thanks for sharing!', likes: 234, time: '2h ago' },
-  { id: 2, user: 'mike_science', avatar: '🧑‍🔬', text: 'Great explanation! Can you make one about quantum physics?', likes: 189, time: '5h ago' },
-  { id: 3, user: 'emma_studies', avatar: '👩‍💻', text: 'I finally understand this concept now 🎉', likes: 156, time: '8h ago' },
-  { id: 4, user: 'alex_tech', avatar: '👨‍💼', text: 'Wow, the visuals really help. Keep it up!', likes: 98, time: '12h ago' },
-  { id: 5, user: 'lily_math', avatar: '👩‍🏫', text: 'Could you do a follow-up on this topic?', likes: 67, time: '1d ago' },
-  { id: 6, user: 'john_research', avatar: '🧑‍🎓', text: 'Exactly what I needed for my exam prep!', likes: 134, time: '1d ago' },
-  { id: 7, user: 'sophia_code', avatar: '👩‍💻', text: 'Mind blown 🤯', likes: 201, time: '2d ago' },
-  { id: 8, user: 'david_learn', avatar: '🧑‍🎓', text: 'Can you explain this in more detail?', likes: 45, time: '2d ago' },
-];
-
 // Comments Sheet Component
 const CommentsSheet = ({ isOpen, onClose, content }) => {
-  const [comments, setComments] = useState(content.comments);
+  const [comments, setComments] = useState(() =>
+    (content.comments || []).map((c) => ({ ...c, replies: Array.isArray(c.replies) ? c.replies : [] }))
+  );
   const [newComment, setNewComment] = useState('');
   const [likedComments, setLikedComments] = useState(new Set());
+  const [replyingTo, setReplyingTo] = useState(null);
 
-  const handleAddComment = () => {
-    if (newComment.trim()) {
-      const newCommentObj = {
-        id: comments.length + 1,
-        user: 'you',
-        avatar: '😊',
-        text: newComment,
-        likes: 0,
-        time: 'Just now'
-      };
-      setComments([newCommentObj, ...comments]);
-      setNewComment('');
+  const countAll = (nodes) =>
+    nodes.reduce((acc, n) => acc + 1 + (n.replies?.length || 0), 0);
+
+  // --- Helpers for AI reply ---
+  const insertAfter = (arr, id, item) => {
+    const idx = arr.findIndex((x) => x.id === id);
+    if (idx === -1) return [...arr, item];
+    const copy = arr.slice();
+    copy.splice(idx + 1, 0, item);
+    return copy;
+  };
+
+  const formatConversation = (topLevel, repliesList) => {
+    const lines = [];
+    if (topLevel) {
+      lines.push(`Top: ${topLevel.author || 'user'}: ${topLevel.content || topLevel.text || ''}`);
+    }
+    for (const r of repliesList || []) {
+      lines.push(`${r.author || 'user'}: ${r.content || r.text || ''}`);
+    }
+    return lines.join('\n');
+  };
+
+  const fetchAiReply = async ({ commentText, conversation }) => {
+    const res = await fetch('http://localhost:5000/comments/response?username=eli', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        comment: commentText,
+        post_context: JSON.stringify(content),
+        conversation
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error || `Request failed: ${res.status}`);
+    }
+    return res.json();
+  };
+
+  const mapBotReply = (data) => {
+    const text =
+      data?.text ??
+      data?.content ??
+      data?.reply ??
+      data?.message ??
+      (typeof data === 'string' ? data : JSON.stringify(data));
+    return {
+      id: Date.now() + Math.random(),
+      author: 'studyscroll',
+      pfp_emoji: '🤖',
+      content: text,
+      likes: 0,
+      time: 'now',
+    };
+  };
+  // --- End helpers ---
+
+  const handleAddComment = async () => {
+    const text = newComment.trim();
+    if (!text) return;
+
+    // New user comment object
+    const newObj = {
+      id: Date.now(),
+      author: 'you',
+      pfp_emoji: '😊',
+      content: text,
+      likes: 0,
+      time: 'now',
+    };
+
+    try {
+      if (replyingTo) {
+        // Replying to a top-level comment: append to that comment’s replies
+        const parentTop = comments.find((c) => c.id === replyingTo.id);
+        const existingReplies = parentTop?.replies || [];
+
+        // Update UI immediately
+        setComments((prev) =>
+          prev.map((c) =>
+            c.id === replyingTo.id
+              ? { ...c, replies: [...(c.replies || []), newObj] }
+              : c
+          )
+        );
+        setReplyingTo(null);
+        setNewComment('');
+
+        // Build conversation including the new user reply
+        const conversation = formatConversation(parentTop, [...existingReplies, newObj]);
+
+        // Fetch AI reply and insert right under user's reply
+        const data = await fetchAiReply({ commentText: text, conversation });
+        const bot = mapBotReply(data);
+
+        setComments((prev) =>
+          prev.map((c) =>
+            c.id === (parentTop?.id ?? replyingTo.id)
+              ? {
+                  ...c,
+                  replies: insertAfter(c.replies || [], newObj.id, bot),
+                }
+              : c
+          )
+        );
+      } else {
+        // New top-level comment: show it, then append AI reply in its replies
+        const newTop = { ...newObj, replies: [] };
+        setComments((prev) => [newTop, ...prev]);
+        setNewComment('');
+
+        // Conversation only contains the new top-level comment at this point
+        const conversation = formatConversation(newTop, []);
+
+        const data = await fetchAiReply({ commentText: text, conversation });
+        const bot = mapBotReply(data);
+
+        setComments((prev) =>
+          prev.map((c) =>
+            c.id === newTop.id ? { ...c, replies: [...(c.replies || []), bot] } : c
+          )
+        );
+      }
+    } catch (err) {
+      console.error('AI reply failed:', err);
+      // Keep the user’s comment; silently skip AI reply on error
     }
   };
 
   const toggleLike = (commentId) => {
-    const newLiked = new Set(likedComments);
-    if (newLiked.has(commentId)) {
-      newLiked.delete(commentId);
-    } else {
-      newLiked.add(commentId);
-    }
-    setLikedComments(newLiked);
+    const next = new Set(likedComments);
+    if (next.has(commentId)) next.delete(commentId);
+    else next.add(commentId);
+    setLikedComments(next);
   };
 
   if (!isOpen) return null;
@@ -113,7 +217,7 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
           borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
         }}>
           <h3 style={{ color: 'white', fontSize: '16px', fontWeight: 'bold' }}>
-            {comments.length} Comments
+            {countAll(comments)} Comments
           </h3>
           <button
             onClick={onClose}
@@ -126,7 +230,6 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
           >
             <X size={22} color="white" />
           </button>
-          
         </div>
 
         <div style={{
@@ -138,48 +241,117 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
           gap: '16px'
         }}>
           {comments.map((comment) => (
-            <div key={comment.id} style={{ display: 'flex', gap: '10px' }}>
-              <div style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '18px',
-                flexShrink: 0
-              }}>
-                {comment.pfp_emoji}
+            <div key={comment.id}>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <div style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '18px',
+                  flexShrink: 0
+                }}>
+                  {comment.pfp_emoji}
+                </div>
+
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '3px' }}>
+                    <span style={{ color: 'white', fontWeight: 'bold', fontSize: '13px' }}>
+                      {comment.author}
+                    </span>
+                    <span style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '11px' }}>
+                      {comment.time}
+                    </span>
+                  </div>
+                  <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '13px', lineHeight: '1.4', marginBottom: '6px' }}>
+                    {comment.content}
+                  </p>
+                  <button
+                    onClick={() => toggleLike(comment.id)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: likedComments.has(comment.id) ? '#ff4458' : 'rgba(255, 255, 255, 0.6)',
+                      fontSize: '11px',
+                      fontWeight: 'bold',
+                      padding: '3px 0'
+                    }}
+                  >
+                    ❤️ {comment.likes + (likedComments.has(comment.id) ? 1 : 0)}
+                  </button>
+                  <button
+                    onClick={() => setReplyingTo(comment)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: 'rgba(255, 255, 255, 0.6)',
+                      fontSize: '11px',
+                      fontWeight: 'bold',
+                      padding: '3px 0',
+                      marginLeft: '8px'
+                    }}
+                  >
+                    Reply
+                  </button>
+                </div>
               </div>
 
-              <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '3px' }}>
-                  <span style={{ color: 'white', fontWeight: 'bold', fontSize: '13px' }}>
-                    {comment.author}
-                  </span>
-                  <span style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '11px' }}>
-                    {comment.time}
-                  </span>
+              {comment.replies?.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '10px', marginLeft: '46px' }}>
+                  {comment.replies.map((r) => (
+                    <div key={r.id} style={{ display: 'flex', gap: '10px' }}>
+                      <div style={{
+                        width: '30px',
+                        height: '30px',
+                        borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '16px',
+                        flexShrink: 0
+                      }}>
+                        {r.pfp_emoji || '😊'}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '3px' }}>
+                          <span style={{ color: 'white', fontWeight: 'bold', fontSize: '12px' }}>
+                            {r.author}
+                          </span>
+                          {r.time && (
+                            <span style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '11px' }}>
+                              {r.time}
+                            </span>
+                          )}
+                        </div>
+                        <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '13px', lineHeight: '1.4', marginBottom: '6px' }}>
+                          {r.content}
+                        </p>
+                        <button
+                          onClick={() => toggleLike(r.id)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            color: likedComments.has(r.id) ? '#ff4458' : 'rgba(255, 255, 255, 0.6)',
+                            fontSize: '11px',
+                            fontWeight: 'bold',
+                            padding: '3px 0'
+                          }}
+                        >
+                          ❤️ {r.likes + (likedComments.has(r.id) ? 1 : 0)}
+                        </button>
+                        {/* No reply button here to keep a single-level thread */}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '13px', lineHeight: '1.4', marginBottom: '6px' }}>
-                  {comment.content}
-                </p>
-                <button
-                  onClick={() => toggleLike(comment.id)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: likedComments.has(comment.id) ? '#ff4458' : 'rgba(255, 255, 255, 0.6)',
-                    fontSize: '11px',
-                    fontWeight: 'bold',
-                    padding: '3px 0'
-                  }}
-                >
-                  ❤️ {comment.likes + (likedComments.has(comment.id) ? 1 : 0)}
-                </button>
-              </div>
+              )}
             </div>
           ))}
         </div>
@@ -191,14 +363,34 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
           gap: '10px',
           alignItems: 'center',
           background: '#1a1a1a',
-          borderRadius: '0 0 24px 24px'
+          borderRadius: '0 0 24px 24px',
+          flexWrap: 'wrap'
         }}>
+          {replyingTo && (
+            <div style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: 'white',
+              fontSize: '12px'
+            }}>
+              Replying to @{replyingTo.author}
+              <button
+                onClick={() => setReplyingTo(null)}
+                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', padding: 0 }}
+                aria-label="Cancel reply"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          )}
           <input
             type="text"
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleAddComment()}
-            placeholder="Add a comment..."
+            onKeyDown={(e) => e.key === 'Enter' && handleAddComment()}
+            placeholder={replyingTo ? "Add a reply..." : "Add a comment..."}
             style={{
               flex: 1,
               background: 'rgba(255, 255, 255, 0.1)',
@@ -236,11 +428,15 @@ const CommentsSheet = ({ isOpen, onClose, content }) => {
 };
 
 // Main Reel Component with Heart Animation
-const Reel = ({ content, isActive }) => {
+const Reel = ({ content, isActive, setStopScroll }) => {
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [showHeartAnimation, setShowHeartAnimation] = useState(false);
+
+  useEffect(() => {
+    setStopScroll(showComments);
+  }, [setStopScroll, showComments])
 
   const handleDoubleTap = () => {
     if (!liked) {
@@ -265,7 +461,7 @@ const Reel = ({ content, isActive }) => {
         return <QuizCard content={content} isActive={isActive} onDoubleTap={handleDoubleTap} />;
       case 'image':
         return <ImageCard content={content} isActive={isActive} onDoubleTap={handleDoubleTap} />;
-      case 'video':
+      case 'reel':
         return <VideoCard content={content} onDoubleTap={handleDoubleTap} />;
       case 'post':
         return <PostCard content={content} onDoubleTap={handleDoubleTap} />;
@@ -556,10 +752,13 @@ const Reel = ({ content, isActive }) => {
 // Main App Component
 export default function VerticalScrollGallery({ content }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [stopScroll, setStopScroll] = useState(false);
   const containerRef = useRef(null);
   const isScrollingRef = useRef(false);
 
   const navigateTo = (newIndex) => {
+    if (stopScroll) return;
+
     if (newIndex >= 0 && newIndex < content.feed.length && !isScrollingRef.current) {
       isScrollingRef.current = true;
       setCurrentIndex(newIndex);
@@ -583,20 +782,18 @@ export default function VerticalScrollGallery({ content }) {
     let scrollTimeout = null;
 
     const handleWheel = (e) => {
+      // Always prevent default so the page doesn’t move
       e.preventDefault();
+      if (stopScroll) return; // block navigation when comments are open
+
       accumulatedDelta += e.deltaY;
 
-      if (scrollTimeout) {
-        clearTimeout(scrollTimeout);
-      }
+      if (scrollTimeout) clearTimeout(scrollTimeout);
 
       scrollTimeout = setTimeout(() => {
         if (Math.abs(accumulatedDelta) > 20) {
-          if (accumulatedDelta > 0) {
-            navigateTo(currentIndex + 1);
-          } else {
-            navigateTo(currentIndex - 1);
-          }
+          if (accumulatedDelta > 0) navigateTo(currentIndex + 1);
+          else navigateTo(currentIndex - 1);
         }
         accumulatedDelta = 0;
       }, 30);
@@ -607,10 +804,13 @@ export default function VerticalScrollGallery({ content }) {
       window.removeEventListener('wheel', handleWheel);
       if (scrollTimeout) clearTimeout(scrollTimeout);
     };
-  }, [currentIndex, content.feed.length]);
+  }, [currentIndex, content.feed.length, stopScroll]); // include stopScroll
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (stopScroll) {
+        return; // block arrow navigation when comments are open
+      }
       if (e.key === 'ArrowDown') {
         e.preventDefault();
         navigateTo(currentIndex + 1);
@@ -622,7 +822,7 @@ export default function VerticalScrollGallery({ content }) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex]);
+  }, [currentIndex, stopScroll]); // include stopScroll
 
   const touchStartY = useRef(0);
   
@@ -631,6 +831,7 @@ export default function VerticalScrollGallery({ content }) {
   };
 
   const handleTouchEnd = (e) => {
+    if (stopScroll) return; // block touch navigation when comments are open
     const touchEndY = e.changedTouches[0].clientY;
     const diff = touchStartY.current - touchEndY;
 
@@ -778,6 +979,7 @@ export default function VerticalScrollGallery({ content }) {
             <Reel
               key={item.title}
               content={item}
+              setStopScroll={setStopScroll}
               isActive={index === currentIndex}
             />
           ))}
