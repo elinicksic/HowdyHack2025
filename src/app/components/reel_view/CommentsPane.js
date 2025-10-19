@@ -34,7 +34,7 @@ const CommentsPane = ({ isOpen, onClose, content }) => {
   };
 
   const fetchAiReply = async ({ commentText, conversation }) => {
-    const res = await fetch('http://127.0.0.1:5000/comments/response?username=eli', {
+    const res = await fetch('/comments/response?username=eli', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

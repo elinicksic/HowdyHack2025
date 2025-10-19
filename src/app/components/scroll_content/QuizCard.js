@@ -104,6 +104,7 @@ export function QuizCard({ content, isActive, onDoubleTap }) {
           animation: 'goodWorkPop 2s ease-out',
           pointerEvents: 'none'
         }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img 
             src="/goodWork.png" 
             alt="Good Work!"
@@ -131,6 +132,7 @@ export function QuizCard({ content, isActive, onDoubleTap }) {
           animation: 'badWorkShake 2s ease-out',
           pointerEvents: 'none'
         }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img 
             src="/badWork.png" 
             alt="Try Again!"

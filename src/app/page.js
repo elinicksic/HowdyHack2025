@@ -91,7 +91,7 @@ export default function HomePage() {
       setIsTransitioning(true);
       setCurrentFeedId(feed_id);
 
-      const res = await fetch(`http://127.0.1:5000/studysets/get?username=eli&id=${encodeURIComponent(feed_id)}`, {
+      const res = await fetch(`/studysets/get?username=eli&id=${encodeURIComponent(feed_id)}`, {
         method: 'GET',
         headers: { Accept: 'application/json' },
       });
@@ -120,7 +120,7 @@ export default function HomePage() {
       setIsTransitioning(true);
       setFeedData(null);
 
-      const create_res = await fetch(`http://127.0.0.1:5000/studysets/create?username=eli`, {
+      const create_res = await fetch(`/studysets/create?username=eli`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -137,7 +137,7 @@ export default function HomePage() {
       const maxAttempts = 1000;
       for (let attempt = 0; attempt < maxAttempts; attempt++) {
         const get_res = await fetch(
-          `http://127.0.0.1:5000/studysets/get?username=eli&id=${encodeURIComponent(id)}`,
+          `/studysets/get?username=eli&id=${encodeURIComponent(id)}`,
           { method: 'GET', headers: { Accept: 'application/json' }, cache: 'no-store' }
         );
         if (!get_res.ok) {
