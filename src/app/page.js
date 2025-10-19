@@ -12,7 +12,7 @@ export default function HomePage() {
 
   const suggestedTopics = [
     {title: "Python Basics", feed_id: "91ebe048-5253-415d-8f18-f39e3a68241c"},
-    {title: "Common Polyatomic-Ions", feed_id: "398e258b-1421-4b93-9778-f8f64ff04a8c"}
+    {title: "Physics Mechanics", feed_id: "6fc40731-73be-4120-89bb-f3a490fd49ce"}
   ];
 
   const [currentTopicIndex, setCurrentTopicIndex] = useState(0);
