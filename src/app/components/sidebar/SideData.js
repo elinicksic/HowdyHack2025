@@ -7,28 +7,28 @@ import { MdEngineering } from "react-icons/md";
 import { SlChemistry } from "react-icons/sl";
 
 export const SidebarData = [
-  {
-    title: "Engineering 102",
-    path: "/",
-    icon: <MdEngineering />,
-    cName: "nav-text",
-    categories: [
-      {
-        title: "function",
-        path: "/function",
-        progress: "90",
-        icon: <IoIcons.IoIosPaper />,
-        cName: "nav-text",
-      },
-      {
-        title: "Lambda",
-        progress: "15",
-        path: "/Lambda",
-        icon: <FaIcons.FaCartPlus />,
-        cName: "nav-text",
-      },
-    ]
-  },
+  // {
+  //   title: "Engineering 102",
+  //   path: "/",
+  //   icon: <MdEngineering />,
+  //   cName: "nav-text",
+  //   categories: [
+  //     {
+  //       title: "function",
+  //       path: "/function",
+  //       progress: "90",
+  //       icon: <IoIcons.IoIosPaper />,
+  //       cName: "nav-text",
+  //     },
+  //     {
+  //       title: "Lambda",
+  //       progress: "15",
+  //       path: "/Lambda",
+  //       icon: <FaIcons.FaCartPlus />,
+  //       cName: "nav-text",
+  //     },
+  //   ]
+  // },
   {
     title: "Chemistry",
     path: "/team",
@@ -36,17 +36,32 @@ export const SidebarData = [
     cName: "nav-text",
     categories: [
       {
-      title: "Stichiometry",
+      title: "Stichiometry ✅",
       path: "/stichiometry",
       progress: "40",
       icon: <FaIcons.FaEnvelopeOpenText />,
       cName: "nav-text",
+      progress_yes: "true",
     },
       {
-      title: "Ideal gases",
+      title: "Ideal gases 🫤",
       path: "/ideal gases",
       progress: "20",
       icon: <IoIcons.IoMdHelpCircle />,
+      cName: "nav-text",
+    },
+    {
+      title: "Reactions 💪",
+      path: "/Reactions",
+      progress: "40",
+      icon: <FaIcons.FaEnvelopeOpenText />,
+      cName: "nav-text",
+    },
+    {
+      title: "Oxidation 💩",
+      path: "/oxidation",
+      progress: "40",
+      icon: <FaIcons.FaEnvelopeOpenText />,
       cName: "nav-text",
     },
     ]

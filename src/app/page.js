@@ -1,14 +1,13 @@
 "use client"
 import { useState, useEffect, useRef } from 'react';
 import PopUp from "./components/sidebar/SideBar";
-import Button from "@mui/material/Button";
 import VerticalScrollFeed from './components/reel_view/VerticalScrollView';
 
 export default function HomePage() {
   const topics = [
     "Principles of Rocketry",
-    "Quantum Mechanics",
-    "Topology",
+    "Principles of Rocketry",
+    "Principles of Rocketry",
   ];
 
   const suggestedTopics = [
@@ -85,13 +84,14 @@ export default function HomePage() {
   const handleSuggestedTopicClick = (topic) => {
     loadPregenerated(topic.feed_id);
   };
+  
   const loadPregenerated = async (feed_id) => {
     try {
       setLoading(true);
       setIsTransitioning(true);
       setCurrentFeedId(feed_id);
 
-      const res = await fetch(`http://127.0.0.1:5000/studysets/get?username=eli&id=${encodeURIComponent(feed_id)}`, {
+      const res = await fetch(`http://127.0.1:5000/studysets/get?username=eli&id=${encodeURIComponent(feed_id)}`, {
         method: 'GET',
         headers: { Accept: 'application/json' },
       });
@@ -103,7 +103,6 @@ export default function HomePage() {
       const data = await res.json();
       setFeedData(data);
 
-      // After data is set, do the hero transition
       setTimeout(() => {
         setShowHero(true);
       }, 300);
@@ -185,36 +184,127 @@ export default function HomePage() {
 
   if (showHero) {
     return (
-      
-      <div className="relative h-screen w-screen">
-        <Button style={{position: 'absolute', top: 20, left: 20, zIndex: 50}} variant="contained" href="/">
-          Back to Home
-        </Button>
-        <PopUp />
-        <div className="flex h-full">
+      <>
+        <style jsx global>{`
+          @keyframes floatBlob1 {
+            0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            33% { transform: translate(30px, -40px) scale(1.1) rotate(120deg); }
+            66% { transform: translate(-40px, 30px) scale(0.9) rotate(240deg); }
+          }
+          @keyframes floatBlob2 {
+            0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            33% { transform: translate(-50px, 50px) scale(1.15) rotate(-120deg); }
+            66% { transform: translate(60px, -30px) scale(0.85) rotate(-240deg); }
+          }
+          @keyframes floatBlob3 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(40px, 60px) scale(1.2); }
+          }
+          @keyframes floatBlob4 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-60px, -40px) scale(1.1); }
+          }
+        `}</style>
+        
+        <div className="relative h-screen w-screen overflow-hidden" style={{ background: '#0a0a0a' }}>
+          {/* Enhanced Gradient Blobs */}
+          <div className="absolute top-[10%] left-[5%] w-[500px] h-[500px] rounded-full filter blur-3xl opacity-40 pointer-events-none"
+               style={{ 
+                 background: 'radial-gradient(circle, rgba(168, 85, 247, 0.6) 0%, transparent 70%)',
+                 animation: 'floatBlob1 14s ease-in-out infinite'
+               }} />
+          
+          <div className="absolute top-[50%] right-[3%] w-[450px] h-[450px] rounded-full filter blur-3xl opacity-40 pointer-events-none"
+               style={{ 
+                 background: 'radial-gradient(circle, rgba(236, 72, 153, 0.6) 0%, transparent 70%)',
+                 animation: 'floatBlob2 16s ease-in-out infinite'
+               }} />
+          
+          <div className="absolute bottom-[15%] left-[15%] w-[550px] h-[550px] rounded-full filter blur-3xl opacity-35 pointer-events-none"
+               style={{ 
+                 background: 'radial-gradient(circle, rgba(59, 130, 246, 0.6) 0%, transparent 70%)',
+                 animation: 'floatBlob3 18s ease-in-out infinite'
+               }} />
+          
+          <div className="absolute top-[30%] left-[35%] w-[400px] h-[400px] rounded-full filter blur-3xl opacity-30 pointer-events-none"
+               style={{ 
+                 background: 'radial-gradient(circle, rgba(251, 191, 36, 0.5) 0%, transparent 70%)',
+                 animation: 'floatBlob4 20s ease-in-out infinite'
+               }} />
+          
+          <div className="absolute bottom-[30%] right-[20%] w-[480px] h-[480px] rounded-full filter blur-3xl opacity-35 pointer-events-none"
+               style={{ 
+                 background: 'radial-gradient(circle, rgba(34, 197, 94, 0.5) 0%, transparent 70%)',
+                 animation: 'floatBlob1 15s ease-in-out infinite reverse'
+               }} />
 
-          <main className="flex-1 relative">
-            <div style={{
-              animation: 'fadeIn 0.5s ease-in-out',
+          {/* Glassmorphic Back Button */}
+          <button 
+            onClick={handleBackToHome}
+            className="glass-back-button"
+            style={{
               position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)'
-              
+              top: '20px',
+              left: '20px',
+              zIndex: 50,
+              background: 'rgba(255, 255, 255, 0.08)',
+              backdropFilter: 'blur(20px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+              border: '1px solid rgba(255, 255, 255, 0.18)',
+              borderRadius: '16px',
+              padding: '12px 24px',
+              color: 'white',
+              fontWeight: '600',
+              fontSize: '14px',
+              cursor: 'pointer',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Home
+          </button>
+
+          <PopUp/>
+          
+          <div className="flex h-full">
+            <main className="flex-1 relative">
+              <div style={{
+                animation: 'fadeIn 0.5s ease-in-out',
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)'
               }}>
-              <style>
-                {`
-                  @keyframes fadeIn {
-                    from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
-                    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-                  }
-                `}
-              </style>
-              <VerticalScrollFeed onBack={handleBackToHome} content={feedData} searchQuery={inputValue} />    
-            </div>
-          </main>
-        </div>      
-      </div>
+                <style>
+                  {`
+                    @keyframes fadeIn {
+                      from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+                      to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                    }
+                  `}
+                </style>
+                <VerticalScrollFeed onBack={handleBackToHome} content={feedData} searchQuery={inputValue} />    
+              </div>
+            </main>
+          </div>      
+        </div>
+      </>
     );
   }
 
